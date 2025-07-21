@@ -1,0 +1,148 @@
+import 'package:flutter/material.dart';
+import '../../services/auth_service.dart';
+import 'register_validator.dart';
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController uname = TextEditingController();
+  final TextEditingController fname = TextEditingController();
+  final TextEditingController lname = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController phone = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
+  bool isLoading = false;
+
+  void _submit() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => isLoading = true);
+
+      final success = await AuthService.registerUser({
+        'username': uname.text,
+        'fname': fname.text,
+        'lname': lname.text,
+        'email': email.text,
+        'phone': phone.text,
+        'password': password.text,
+      });
+
+      setState(() => isLoading = false);
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful')),
+        );
+        Navigator.pop(context); // or navigate to login
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration failed')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Image.asset('assets/images/pizza_chef.png', width: 200),
+                Transform.translate(
+                  offset: Offset(0, -50),
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Create Account',
+                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, fontFamily: 'Amerika'),
+                      ),
+                      const Text('Register with your credentials.')
+                    ],
+                  ),
+                ),
+                _buildField(uname, 'Username', (v) => RegisterValidator.validateField(v, 'Username')),
+                _buildField(fname, 'First Name', (v) => RegisterValidator.validateField(v, 'First Name')),
+                _buildField(lname, 'Last Name', (v) => RegisterValidator.validateField(v, 'Last Name')),
+                _buildField(email, 'Email', RegisterValidator.validateEmail),
+                _buildField(phone, 'Phone', RegisterValidator.validatePhone),
+                _buildField(password, 'Password', RegisterValidator.validatePassword, obscure: true),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: isLoading ? null : _submit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    minimumSize: const Size.fromHeight(45),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                  ),
+                  child: isLoading
+                      ? Row( mainAxisAlignment: MainAxisAlignment.center, children: const [ CircularProgressIndicator(color: Colors.white),SizedBox(width: 12),Text('Loading...', style: TextStyle(color: Colors.white)),],)
+                      : const Text('Sign Up', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 3)),
+                ),
+                Row(
+                  children: [
+                    const Text('Already have an account?'),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Login'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildField(
+      TextEditingController controller,
+      String label,
+      String? Function(String?) validator, {
+        bool obscure = false,
+      }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ), // or use Theme.of(context).textTheme.labelLarge,
+            ),
+          ),
+          const SizedBox(height: 6),
+          TextFormField(
+            controller: controller,
+            obscureText: obscure,
+            validator: validator,
+            decoration: InputDecoration(
+              hintText: 'Enter $label',
+              filled: true,
+              fillColor: Colors.grey.shade100,
+              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(25)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+}
