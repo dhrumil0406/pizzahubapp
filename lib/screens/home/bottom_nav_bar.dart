@@ -13,14 +13,34 @@ class BottomNavBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const [
-            Icon(Icons.home, color: Colors.orange, size: 35,),
-            Icon(Icons.receipt_long, size: 35,),
-            Icon(Icons.shopping_cart, size: 35,),
-            Icon(Icons.person, size: 35,),
+          children: [
+            _iconWithContainer(Icons.home, Colors.orange),
+            _iconWithContainer(Icons.receipt_long, Colors.black87),
+            _iconWithContainer(Icons.shopping_cart, Colors.black87),
+            _iconWithContainer(Icons.person, Colors.black87),
           ],
         ),
       ),
     );
   }
+
+  Widget _iconWithContainer(IconData icon, Color color) {
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6,
+            offset: Offset(2, 2),
+          ),
+        ],
+      ),
+      child: Icon(icon, color: color, size: 28),
+    );
+  }
+
 }

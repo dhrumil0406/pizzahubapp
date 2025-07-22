@@ -33,7 +33,7 @@ class PizzaCard extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 50,
+            bottom: 55,
             left: 12,
             right: 12,
             child: Column(
@@ -54,7 +54,7 @@ class PizzaCard extends StatelessWidget {
                 shape: const StadiumBorder(),
                 backgroundColor: Colors.orange,
               ),
-              child: const Text("View", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+              child: const Text("View All", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
             ),
           ),
         ],
