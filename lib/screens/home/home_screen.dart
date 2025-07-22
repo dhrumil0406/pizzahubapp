@@ -55,7 +55,7 @@ class HomeScreen extends StatelessWidget {
                 );
               }),
               options: CarouselOptions(
-                height: 180,
+                height: 200,
                 enlargeCenterPage: true,
                 autoPlay: true,
                 aspectRatio: 16 / 9,
@@ -67,33 +67,34 @@ class HomeScreen extends StatelessWidget {
               child: Text("Categories",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ),
-            SizedBox(
-              height: 50,
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                itemCount: categories.length,
-                itemBuilder: (context, index) =>
-                    CategoryButton(label: categories[index]),
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 800,
-              child: GridView.builder(
-                scrollDirection: Axis.vertical,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 10,
-                  childAspectRatio: 0.75,
+                child: Row(
+                  children: [
+                    CategoryButton(label: "All", isSelected: true, onTap: () {}),
+                    CategoryButton(label: "Veg", onTap: () {}),
+                    CategoryButton(label: "Non-Veg", onTap: () {}),
+                    CategoryButton(label: "Combo", onTap: () {}),
+                  ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: 6, // Total number of PizzaCards
-                itemBuilder: (context, index) => const PizzaCard(),
               ),
             ),
+            const SizedBox(height: 5),
+            GridView.builder(
+              padding: const EdgeInsets.all(16),
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.68, // Must match the AspectRatio in PizzaCard
+              ),
+              itemCount: 6,
+              itemBuilder: (context, index) => const PizzaCard(),
+            )
           ],
         ),
       ),
