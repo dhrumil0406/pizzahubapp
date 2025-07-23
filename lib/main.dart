@@ -19,7 +19,7 @@ class PizzaHubApp extends StatelessWidget {
         primarySwatch: Colors.orange,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 }
