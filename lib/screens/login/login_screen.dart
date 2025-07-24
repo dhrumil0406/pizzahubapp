@@ -27,18 +27,22 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       setState(() => isLoading = false);
 
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful')),
-        );
-        // Navigate to home or next screen
+      final message = await AuthService.loginUser(
+        emailController.text,
+        passwordController.text,
+      );
+
+      setState(() => isLoading = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+
+      if (message.toLowerCase().contains('success')) {
+        // Navigate only on successful login
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid credentials')),
         );
       }
     }

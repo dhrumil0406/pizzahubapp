@@ -1,13 +1,41 @@
-class AuthService {
-  static Future<bool> loginUser(String email, String password) async {
-    // Simulated API response
-    await Future.delayed(const Duration(seconds: 2));
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-    // Example: match with dummy data
-    if (email == 'test@pizza.com' && password == '123456') {
-      return true;
+class AuthService {
+
+  static final String baseUrl = "http://10.0.2.2/pizzahubapp/";
+  static Future loginUser(String email, String password) async {
+    await Future.delayed(const Duration(seconds: 2));
+    // Simulated API response
+    final Uri url = Uri.parse('$baseUrl/handleUserLogin.php');
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        if (responseData['status'] == 'success') {
+          // You can also return user data if needed
+          print('User data: ${responseData['data']}');
+          return responseData['message']; // "Login successful"
+        } else {
+          return responseData['message']; // "Invalid email or password"
+        }
+      } else {
+        return 'Server error: ${response.statusCode}';
+      }
+    } catch (e) {
+      return 'Error: $e';
     }
-    return false;
   }
 
   static Future<bool> registerUser(Map<String, String> userData) async {
