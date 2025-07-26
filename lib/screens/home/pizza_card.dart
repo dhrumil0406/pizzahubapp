@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import '../../models/category_model.dart';
 
 class PizzaCard extends StatelessWidget {
-  const PizzaCard({super.key});
+  final PizzaCategory category;
+
+  const PizzaCard({super.key, required this.category});
 
   @override
   Widget build(BuildContext context) {
+    print('Image Path: ${category.catimage}');
     return AspectRatio(
-      aspectRatio: 0.68, // width / height = 170 / 280 ≈ 0.607 but 0.75 looks better
+      aspectRatio: 0.68,
       child: Container(
         width: 170,
-        margin: const EdgeInsets.symmetric(horizontal: 5),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -18,11 +22,11 @@ class PizzaCard extends StatelessWidget {
         child: Stack(
           children: [
             Positioned(
-              top: 10,
+              top: 14,
               left: 22,
               child: Container(
-                width: 100,
-                height: 100,
+                width: 110,
+                height: 110,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
                   boxShadow: [
@@ -36,42 +40,44 @@ class PizzaCard extends StatelessWidget {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: Image.asset(
-                  'assets/images/pizza-1.png',
+                  'assets/catimages/${category.catimage}',
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            Positioned(
-              top: 4,
-              right: 4,
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.black87,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text(
-                  '-5%',
-                  style: TextStyle(
+            if (category.discount > 0)
+              Positioned(
+                top: 4,
+                right: 4,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${category.discount.toStringAsFixed(1)}%',
+                    style: const TextStyle(
                       color: Colors.white,
+                      fontWeight: FontWeight.bold,
                       fontSize: 12,
-                      fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
               ),
-            ),
             Positioned(
-              bottom: 55,
+              bottom: 60,
               left: 12,
               right: 12,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text("Margherita",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 4),
+                children: [
+                  Text(category.catname,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
                   Text(
-                    "Classic cheese pizza this is a sample text with pizza app",
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    category.catdesc,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -85,12 +91,13 @@ class PizzaCard extends StatelessWidget {
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(25),
-                        topRight: Radius.circular(30),
-                        bottomRight: Radius.circular(30)
+                      bottomLeft: Radius.circular(25),
+                      topRight: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
                     ),
                   ),
                   elevation: 0,
@@ -103,7 +110,7 @@ class PizzaCard extends StatelessWidget {
                     fontSize: 14,
                   ),
                 ),
-              )
+              ),
             ),
           ],
         ),

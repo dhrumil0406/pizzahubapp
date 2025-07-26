@@ -3,14 +3,61 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'category_button.dart';
 import 'pizza_card.dart';
 import '../../widgets/bottom_nav_bar.dart';
+import '../../models/category_model.dart';
+import '../../services/category_service.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final categories = ['All', 'Veg', 'Non-Veg', 'Combo'];
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
+class _HomeScreenState extends State<HomeScreen> {
+  final List<String> categoryLabels = ['All', 'Veg', 'Non-Veg', 'Combo'];
+  int selectedCategoryId = 0;
+  bool isLoading = true;
+  List<PizzaCategory> pizzaCategories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategories(0);
+  }
+
+  void fetchCategories(int categoryId) async {
+    setState(() {
+      isLoading = true;
+      selectedCategoryId = categoryId;
+    });
+    try {
+      final categories = await CategoryService.fetchPizzaCategories(categoryId);
+      print("Fetched ${categories.length} categories");
+      setState(() {
+        pizzaCategories = categories;
+      });
+    } catch (e) {
+      // Optionally handle error
+      print("Error fetching categories: $e"); // Optional debug
+    }
+    setState(() => isLoading = false);
+  }
+
+  int getCategoryIdFromLabel(String label) {
+    switch (label) {
+      case 'Veg':
+        return 1;
+      case 'Non-Veg':
+        return 2;
+      case 'Combo':
+        return 3;
+      default:
+        return 0;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -36,8 +83,10 @@ class HomeScreen extends StatelessWidget {
           )
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 80), // So content isn't hidden behind bottom bar
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 80),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,19 +114,22 @@ class HomeScreen extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
               child: Text("Categories",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold)),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 12),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: [
-                    CategoryButton(label: "All", isSelected: true, onTap: () {}),
-                    CategoryButton(label: "Veg", onTap: () {}),
-                    CategoryButton(label: "Non-Veg", onTap: () {}),
-                    CategoryButton(label: "Combo", onTap: () {}),
-                  ],
+                  children: categoryLabels.map((label) {
+                    int id = getCategoryIdFromLabel(label);
+                    return CategoryButton(
+                      label: label,
+                      isSelected: selectedCategoryId == id,
+                      onTap: () => fetchCategories(id),
+                    );
+                  }).toList(),
                 ),
               ),
             ),
@@ -86,14 +138,16 @@ class HomeScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate:
+              const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
-                childAspectRatio: 0.68, // Must match the AspectRatio in PizzaCard
+                childAspectRatio: 0.68,
               ),
-              itemCount: 6,
-              itemBuilder: (context, index) => const PizzaCard(),
+              itemCount: pizzaCategories.length,
+              itemBuilder: (context, index) =>
+                  PizzaCard(category: pizzaCategories[index]),
             )
           ],
         ),
