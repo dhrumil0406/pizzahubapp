@@ -21,11 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       setState(() => isLoading = true);
-      final success = await AuthService.loginUser(
-        emailController.text,
-        passwordController.text,
-      );
-      setState(() => isLoading = false);
 
       final message = await AuthService.loginUser(
         emailController.text,

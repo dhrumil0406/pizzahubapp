@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/splash/splash_screen.dart';
-import 'screens/home/home_screen.dart';
+// import 'screens/home/home_screen.dart';
 
 void main() {
   runApp(const PizzaHubApp());

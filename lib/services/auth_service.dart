@@ -38,10 +38,26 @@ class AuthService {
     }
   }
 
-  static Future<bool> registerUser(Map<String, String> userData) async {
-
+  static Future<String> registerUser(Map<String, String> userData) async {
     await Future.delayed(const Duration(seconds: 2));
+    final Uri url = Uri.parse('$baseUrl/handleUserSignup.php');
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(userData),
+      );
 
-    return true;
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData['message'];
+      } else {
+        return 'Server error: ${response.statusCode}';
+      }
+    } catch (e) {
+      return 'Exception: $e';
+    }
   }
 }

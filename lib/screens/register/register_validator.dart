@@ -6,7 +6,8 @@ class RegisterValidator {
   }
 
   static String? validatePassword(String? value) {
-    if (value == null || value.length < 6) return 'Password must be at least 6 characters';
+    if (value == null || value.isEmpty) return 'Password is required';
+    if (value.length < 6) return 'Password must be at least 6 characters';
     return null;
   }
 
@@ -16,7 +17,8 @@ class RegisterValidator {
   }
 
   static String? validatePhone(String? value) {
-    if (value == null || !RegExp(r'^\d{10}$').hasMatch(value)) return 'Enter valid 10-digit phone';
+    if (value == null || value.isEmpty) return 'PhoneNo is required';
+    if (!RegExp(r'^\d{10}$').hasMatch(value)) return 'Enter valid 10-digit phone';
     return null;
   }
 }

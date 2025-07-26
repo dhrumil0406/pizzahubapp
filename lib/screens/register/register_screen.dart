@@ -24,26 +24,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => isLoading = true);
 
-      final success = await AuthService.registerUser({
-        'username': uname.text,
-        'fname': fname.text,
-        'lname': lname.text,
-        'email': email.text,
-        'phone': phone.text,
-        'password': password.text,
+      final message = await AuthService.registerUser({
+        'username': uname.text.trim(),
+        'fname': fname.text.trim(),
+        'lname': lname.text.trim(),
+        'email': email.text.trim(),
+        'phone': phone.text.trim(),
+        'password': password.text.trim(),
       });
 
       setState(() => isLoading = false);
 
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration successful')),
-        );
-        Navigator.pop(context); // or navigate to login
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration failed')),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+
+      if (message.toLowerCase().contains('success')) {
+        Navigator.pop(context); // Go back to login or home
       }
     }
   }
