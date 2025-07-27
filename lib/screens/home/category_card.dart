@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../models/category_model.dart';
+import '../pizza_list/pizza_list.dart';
 
 class PizzaCard extends StatelessWidget {
   final PizzaCategory category;
+  final List<PizzaCategory> allCategories;
 
-  const PizzaCard({super.key, required this.category});
+  const PizzaCard({
+    super.key,
+    required this.category,
+    required this.allCategories
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,16 +58,12 @@ class PizzaCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.black87,
+                    color: Colors.orange.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${category.discount.toStringAsFixed(1)}%',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 12)
                   ),
                 ),
               ),
@@ -88,7 +90,15 @@ class PizzaCard extends StatelessWidget {
               bottom: 8,
               right: 8,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          PizzaListScreen(categoryId: category.catid.toString(), allCategories: allCategories), // ✅ Pass categoryId
+                    ),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
                   padding:

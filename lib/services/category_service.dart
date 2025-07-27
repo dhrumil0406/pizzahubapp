@@ -4,6 +4,7 @@ import '../models/category_model.dart';
 
 class CategoryService {
   static const String baseUrl = 'http://10.0.2.2/pizzahubapp/userIndex.php';
+  // static const String baseUrl2 = 'http://10.104.169.30/pizzahubapp/userIndex.php';
 
   static Future<List<PizzaCategory>> fetchPizzaCategories(int categoryId) async {
     // await Future.delayed(const Duration(seconds: 1));

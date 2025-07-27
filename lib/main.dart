@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'screens/splash/splash_screen.dart';
+import 'screens/splash/splash_screen.dart';
 import 'screens/home/home_screen.dart';
 
 void main() {
@@ -19,7 +19,7 @@ class PizzaHubApp extends StatelessWidget {
         primarySwatch: Colors.orange,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 }

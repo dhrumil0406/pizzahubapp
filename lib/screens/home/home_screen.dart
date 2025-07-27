@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'category_button.dart';
-import 'pizza_card.dart';
+import 'filter_button.dart';
+import 'category_card.dart';
 import '../../widgets/bottom_nav_bar.dart';
 import '../../models/category_model.dart';
 import '../../services/category_service.dart';
@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   children: categoryLabels.map((label) {
                     int id = getCategoryIdFromLabel(label);
-                    return CategoryButton(
+                    return FilterButton(
                       label: label,
                       isSelected: selectedCategoryId == id,
                       onTap: () => fetchCategories(id),
@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               itemCount: pizzaCategories.length,
               itemBuilder: (context, index) =>
-                  PizzaCard(category: pizzaCategories[index]),
+                  PizzaCard(category: pizzaCategories[index], allCategories: pizzaCategories),
             )
           ],
         ),

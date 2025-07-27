@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 class AuthService {
 
   static final String baseUrl = "http://10.0.2.2/pizzahubapp/";
+  // static final String baseUrl2 = "http://10.104.169.30/pizzahubapp/";
   static Future loginUser(String email, String password) async {
     await Future.delayed(const Duration(seconds: 2));
     // Simulated API response
