@@ -21,19 +21,19 @@ class PizzaListScreen extends StatefulWidget {
 
 class _PizzaListScreenState extends State<PizzaListScreen> {
   late int selectedCategoryId;
-  late Future<List<Pizza>> futurePizzaList;
+  late Future<List<Pizza>> getPizzaList;
 
   @override
   void initState() {
     super.initState();
     selectedCategoryId = int.parse(widget.categoryId);
-    futurePizzaList = PizzaService.fetchPizzas(int.parse(widget.categoryId));
+    getPizzaList = PizzaService.fetchPizzas(int.parse(widget.categoryId));
   }
 
   void fetchByCategory(int categoryId) {
     setState(() {
       selectedCategoryId = categoryId;
-      futurePizzaList = PizzaService.fetchPizzas(categoryId);
+      getPizzaList = PizzaService.fetchPizzas(categoryId);
     });
   }
 
@@ -103,7 +103,7 @@ class _PizzaListScreenState extends State<PizzaListScreen> {
           const SizedBox(height: 5),
           Expanded(
             child: FutureBuilder<List<Pizza>>(
-              future: futurePizzaList,
+              future: getPizzaList,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator(color: Colors.orange));
