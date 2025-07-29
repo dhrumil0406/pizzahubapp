@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
               child: Text("Categories",
                   style: TextStyle(
                       fontSize: 20, fontWeight: FontWeight.bold)),
@@ -121,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(left: 12),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(vertical: 8),
                 child: Row(
                   children: categoryLabels.map((label) {
                     int id = getCategoryIdFromLabel(label);
@@ -133,7 +134,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 5),
             GridView.builder(
               padding: const EdgeInsets.all(16),
               physics: const NeverScrollableScrollPhysics(),

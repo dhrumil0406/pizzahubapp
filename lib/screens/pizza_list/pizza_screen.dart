@@ -54,7 +54,7 @@ class PizzaScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           Center(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -157,7 +157,7 @@ class PizzaScreen extends StatelessWidget {
               onPressed: () {},
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
-                padding: const EdgeInsets.symmetric(vertical: 13),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),

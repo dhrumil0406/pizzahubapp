@@ -9,7 +9,7 @@ class PizzaCard extends StatelessWidget {
   const PizzaCard({
     super.key,
     required this.category,
-    required this.allCategories
+    required this.allCategories,
   });
 
   @override
@@ -29,10 +29,10 @@ class PizzaCard extends StatelessWidget {
           children: [
             Positioned(
               top: 14,
-              left: 22,
+              left: 24,
               child: Container(
-                width: 110,
-                height: 110,
+                width: 100,
+                height: 100,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
                   boxShadow: [
@@ -56,71 +56,157 @@ class PizzaCard extends StatelessWidget {
                 top: 4,
                 right: 4,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.1),
+                    color: Colors.black87.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${category.discount.toStringAsFixed(1)}%',
-                    style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 12)
+                    style: const TextStyle(
+                      color: Colors.orange,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ),
+            // pizzaName and desc
             Positioned(
-              bottom: 60,
+              bottom: 54,
               left: 12,
               right: 12,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(category.catname,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
+                  Text(
+                    category.catname,
+                    style: const TextStyle(fontSize: 13,fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 2),
                   Text(
                     category.catdesc,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style: const TextStyle(fontSize: 11, color: Colors.grey),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
+            // 🛒 Cart & View All buttons (Only if combo)
             Positioned(
               bottom: 8,
+              left: 8,
               right: 8,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          PizzaListScreen(categoryId: category.catid.toString(), allCategories: allCategories), // ✅ Pass categoryId
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(25),
-                      topRight: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
+              child: category.iscombo == 1
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // 🛒 Cart Icon with circle & shadow
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 4,
+                                offset: Offset(2, 2),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            icon: const Icon(
+                              Icons.add_shopping_cart,
+                              color: Colors.orange,
+                            ),
+                            onPressed: () {},
+                          ),
+                        ),
+
+                        // 👁️ View All Button
+                        ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 0,
+                            ),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(40),
+                                topRight: Radius.circular(40),
+                                bottomRight: Radius.circular(40),
+                              ),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            "₹${category.comboprice.toStringAsFixed(0)}",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 0,
+                      vertical: 0,
                     ),
                   ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  "View All",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                  // 👁️ View All Button
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PizzaListScreen(
+                            categoryId: category.catid.toString(),
+                            allCategories: allCategories,
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 0,
+                      ),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(40),
+                          topRight: Radius.circular(40),
+                          bottomRight: Radius.circular(40),
+                        ),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      "View All",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                ],
+              )
             ),
           ],
         ),

@@ -7,7 +7,7 @@ class CategoryService {
   // static const String baseUrl2 = 'http://10.104.169.30/pizzahubapp/userIndex.php';
 
   static Future<List<PizzaCategory>> fetchPizzaCategories(int categoryId) async {
-    // await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 300));
     final response = await http.post(
       Uri.parse(baseUrl),
       body: {'category_id': categoryId.toString()},

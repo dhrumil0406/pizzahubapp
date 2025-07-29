@@ -86,7 +86,7 @@ class _PizzaListScreenState extends State<PizzaListScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 12),
+            padding: const EdgeInsets.only(left: 10),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
