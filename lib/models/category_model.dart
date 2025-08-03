@@ -7,6 +7,8 @@ class PizzaCategory {
   final int iscombo;
   final double comboprice;
   final double discount;
+  final DateTime catcreatedate;
+  final DateTime catupdatedate;
 
   PizzaCategory({
     required this.catid,
@@ -17,18 +19,37 @@ class PizzaCategory {
     required this.iscombo,
     required this.comboprice,
     required this.discount,
+    required this.catcreatedate,
+    required this.catupdatedate
   });
 
   factory PizzaCategory.fromJson(Map<String, dynamic> json) {
     return PizzaCategory(
       catid: int.tryParse(json['catid'].toString()) ?? 0,
-      catname: json['catname'] ?? '',
-      catimage: json['catimage'] ?? '',
-      catdesc: json['catdesc'] ?? '',
+      catname: json['catname']?.toString() ?? '',
+      catimage: json['catimage']?.toString() ?? '',
+      catdesc: json['catdesc']?.toString() ?? '',
       cattype: int.tryParse(json['cattype'].toString()) ?? 0,
       iscombo: int.tryParse(json['iscombo'].toString()) ?? 0,
       comboprice: double.tryParse(json['comboprice'].toString()) ?? 0.0,
       discount: double.tryParse(json['discount'].toString()) ?? 0.0,
+      catcreatedate: DateTime.parse(json['catcreatedate']),
+      catupdatedate: DateTime.parse(json['catupdatedate'])
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'catid': catid,
+      'catname': catname,
+      'catimage': catimage,
+      'catdesc': catdesc,
+      'cattype': cattype,
+      'iscombo': iscombo,
+      'comboprice': comboprice,
+      'discount': discount,
+      'catcreatedate': catcreatedate.toIso8601String(),
+      'catupdatedate': catupdatedate.toIso8601String()
+    };
   }
 }

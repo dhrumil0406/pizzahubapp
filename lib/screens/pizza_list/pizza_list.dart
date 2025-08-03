@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/cart_service.dart';
 import '../../screens/pizza_list/category_button.dart';
 import '../../models/category_model.dart';
 import '../../models/pizza_model.dart';
@@ -8,11 +9,13 @@ import 'pizza_card.dart';
 class PizzaListScreen extends StatefulWidget {
   final String categoryId;
   final List<PizzaCategory> allCategories;
+  final int userId;
 
   const PizzaListScreen({
     super.key,
     required this.categoryId,
     required this.allCategories,
+    this.userId = 1
   });
 
   @override
@@ -40,6 +43,15 @@ class _PizzaListScreenState extends State<PizzaListScreen> {
   PizzaCategory? get selectedCategory {
     return widget.allCategories.firstWhere(
       (cat) => cat.catid == selectedCategoryId,
+    );
+  }
+
+  Future<void> _handleAddComboToCart(BuildContext context) async {
+    final result = await CartService.addComboToCart(widget.userId, selectedCategoryId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message']),
+      ),
     );
   }
 
@@ -147,9 +159,7 @@ class _PizzaListScreenState extends State<PizzaListScreen> {
                         width: double.infinity,
                         margin: const EdgeInsets.only(left: 18, bottom: 22, right: 18),
                         child: ElevatedButton(
-                          onPressed: () {
-                            // TODO: Add combo items to cart
-                          },
+                          onPressed: () => _handleAddComboToCart(context),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.orange,
                             padding: const EdgeInsets.symmetric(vertical: 10),

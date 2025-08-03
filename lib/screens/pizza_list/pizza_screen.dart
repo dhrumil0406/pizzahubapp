@@ -2,19 +2,31 @@ import 'package:flutter/material.dart';
 
 import '../../models/pizza_model.dart';
 import '../../models/category_model.dart';
+import '../../services/cart_service.dart';
 
 class PizzaScreen extends StatelessWidget {
   final Pizza pizza;
   final PizzaCategory category;
   final bool isInCart; // Don't modify value
+  final int userId;
 
   const PizzaScreen({
     super.key,
     required this.pizza,
     required this.category,
-    this.isInCart = false
+    this.isInCart = false,
+    this.userId = 1
   });
   // final bool isInCart = false; // toggle to true to see "Go to Cart"
+
+  Future<void> _handleAddToCart(BuildContext context) async {
+    final result = await CartService.addToCart(userId, pizza.pizzaid);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message']),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +216,7 @@ class PizzaScreen extends StatelessWidget {
               width: double.infinity,
               margin: const EdgeInsets.only(left: 18, bottom: 22, right: 18),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => _handleAddToCart(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.orange,
                   padding: const EdgeInsets.symmetric(vertical: 10),

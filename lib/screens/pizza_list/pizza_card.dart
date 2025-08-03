@@ -1,23 +1,38 @@
 import 'package:flutter/material.dart';
 import '../../models/category_model.dart';
 import '../../models/pizza_model.dart';
+import '../../services/cart_service.dart';
 import 'pizza_screen.dart';
 
 class PizzaCard extends StatelessWidget {
   final Pizza pizza;
   final PizzaCategory category;
+  final int userId;
 
-  const PizzaCard({super.key, required this.pizza, required this.category});
+  const PizzaCard({
+    super.key,
+    required this.pizza,
+    required this.category,
+    this.userId = 1, // Or pass dynamically via constructor if you use session management
+  });
+
+  Future<void> _handleAddToCart(BuildContext context) async {
+    final result = await CartService.addToCart(userId, pizza.pizzaid);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message']),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // ✅ Navigate to PizzaScreen
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PizzaScreen(pizza: pizza,category: category,),
+            builder: (context) => PizzaScreen(pizza: pizza, category: category),
           ),
         );
       },
@@ -45,8 +60,6 @@ class PizzaCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-
-                /// Use Flexible instead of Expanded
                 Flexible(
                   fit: FlexFit.tight,
                   child: Column(
@@ -73,10 +86,9 @@ class PizzaCard extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 const SizedBox(width: 8),
 
-                /// Fixed-size cart icon
+                /// Add to Cart Button
                 if (category.iscombo == 0)
                   Container(
                     width: 50,
@@ -94,11 +106,8 @@ class PizzaCard extends StatelessWidget {
                     ),
                     child: IconButton(
                       padding: EdgeInsets.zero,
-                      icon: const Icon(
-                        Icons.add_shopping_cart,
-                        color: Colors.orange,
-                      ),
-                      onPressed: () {},
+                      icon: const Icon(Icons.add_shopping_cart, color: Colors.orange),
+                      onPressed: () => _handleAddToCart(context),
                     ),
                   )
                 else
@@ -115,17 +124,12 @@ class PizzaCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-
-            /// Discount and Price on same row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (pizza.discount > 0)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.orange.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -139,44 +143,22 @@ class PizzaCard extends StatelessWidget {
                     ),
                   )
                 else
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                  ),
+                  Container(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8)),
                 if (category.iscombo == 0)
                   Row(
                     children: [
-                      if (category.cattype == 1)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 8,
-                          ),
-                          height: 50,
-                          child: Image.asset(
-                            'assets/icons/veg-mark.jpg',
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      else
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 8,
-                          ),
-                          height: 50,
-                          child: Image.asset(
-                            'assets/icons/non-veg-mark.jpg',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 8,
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+                        height: 50,
+                        child: Image.asset(
+                          category.cattype == 1
+                              ? 'assets/icons/veg-mark.jpg'
+                              : 'assets/icons/non-veg-mark.jpg',
+                          fit: BoxFit.cover,
                         ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                         decoration: const BoxDecoration(
                           color: Colors.orange,
                           borderRadius: BorderRadius.only(

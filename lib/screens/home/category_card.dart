@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 import '../../models/category_model.dart';
+import '../../services/cart_service.dart';
 import '../pizza_list/pizza_list.dart';
 
 class PizzaCard extends StatelessWidget {
   final PizzaCategory category;
   final List<PizzaCategory> allCategories;
+  final int userId;
 
   const PizzaCard({
     super.key,
     required this.category,
     required this.allCategories,
+    this.userId = 1
   });
+
+  Future<void> _handleAddComboToCart(BuildContext context) async {
+    final result = await CartService.addComboToCart(userId, category.catid);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result['message']),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +146,7 @@ class PizzaCard extends StatelessWidget {
                               Icons.add_shopping_cart,
                               color: Colors.orange,
                             ),
-                            onPressed: () {},
+                            onPressed: () => _handleAddComboToCart(context),
                           ),
                         ),
 
