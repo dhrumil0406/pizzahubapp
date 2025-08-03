@@ -92,9 +92,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             CarouselSlider(
               items: [
+                'assets/images/b4.png',
                 'assets/images/b1.png',
                 'assets/images/b2.png',
-                'assets/images/b3.png',
               ].map((imagePath) {
                 return Container(
                   margin: const EdgeInsets.all(8),
