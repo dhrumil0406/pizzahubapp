@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pizzahub/screens/pizza_list/category_button.dart';
+import '../../screens/pizza_list/category_button.dart';
 import '../../models/category_model.dart';
 import '../../models/pizza_model.dart';
 import '../../services/pizza_service.dart';
@@ -10,9 +10,9 @@ class PizzaListScreen extends StatefulWidget {
   final List<PizzaCategory> allCategories;
 
   const PizzaListScreen({
-      super.key,
-      required this.categoryId,
-      required this.allCategories,
+    super.key,
+    required this.categoryId,
+    required this.allCategories,
   });
 
   @override
@@ -37,6 +37,12 @@ class _PizzaListScreenState extends State<PizzaListScreen> {
     });
   }
 
+  PizzaCategory? get selectedCategory {
+    return widget.allCategories.firstWhere(
+      (cat) => cat.catid == selectedCategoryId,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,14 +57,17 @@ class _PizzaListScreenState extends State<PizzaListScreen> {
             boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
           ),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.orange),
+            icon: const Icon(
+              Icons.arrow_back_ios_new_outlined,
+              color: Colors.orange,
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
         ),
         title: const Text(
-          "Your Orders",
+          "Our Menu",
           style: TextStyle(
             fontSize: 26,
             fontFamily: 'amerika',
@@ -79,7 +88,7 @@ class _PizzaListScreenState extends State<PizzaListScreen> {
               icon: const Icon(Icons.search, color: Colors.orange),
               onPressed: () {},
             ),
-          )
+          ),
         ],
       ),
       backgroundColor: Colors.white,
@@ -106,7 +115,9 @@ class _PizzaListScreenState extends State<PizzaListScreen> {
               future: getPizzaList,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator(color: Colors.orange));
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.orange),
+                  );
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -114,12 +125,49 @@ class _PizzaListScreenState extends State<PizzaListScreen> {
                 }
 
                 final pizzas = snapshot.data!;
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: pizzas.length,
-                  itemBuilder: (context, index) {
-                    return PizzaCard(pizza: pizzas[index]);
-                  },
+
+                return Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: pizzas.length,
+                        itemBuilder: (context, index) {
+                          final category = widget.allCategories.firstWhere(
+                                (cat) => cat.catid == pizzas[index].catid,
+                          );
+                          return PizzaCard(pizza: pizzas[index], category: category);
+                        },
+                      ),
+                    ),
+
+                    // ✅ Show "Add to Cart" only if combo and items exist
+                    if (selectedCategory?.iscombo == 1 && pizzas.isNotEmpty)
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(left: 18, bottom: 22, right: 18),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // TODO: Add combo items to cart
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Text(
+                            "Add to Cart",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 );
               },
             ),

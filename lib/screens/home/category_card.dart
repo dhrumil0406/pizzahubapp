@@ -93,6 +93,14 @@ class PizzaCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 2),
+                  if(category.iscombo == 1)
+                    Text(
+                      '${category.comboprice.toStringAsFixed(1)}%',
+                      style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                 ],
               ),
             ),
@@ -132,7 +140,17 @@ class PizzaCard extends StatelessWidget {
 
                         // 👁️ View All Button
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PizzaListScreen(
+                                  categoryId: category.catid.toString(),
+                                  allCategories: allCategories,
+                                ),
+                              ),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.orange,
                             padding: const EdgeInsets.symmetric(
@@ -148,8 +166,8 @@ class PizzaCard extends StatelessWidget {
                             ),
                             elevation: 0,
                           ),
-                          child: Text(
-                            "₹${category.comboprice.toStringAsFixed(0)}",
+                          child: const Text(
+                            "View All",
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -162,12 +180,32 @@ class PizzaCard extends StatelessWidget {
                   : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 0,
-                      vertical: 0,
+                  if(category.cattype == 1)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 8,
+                      ),
+                      height: 50,
+                      child:
+                      Image.asset(
+                        'assets/icons/veg-mark.jpg',
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 8,
+                      ),
+                      height: 50,
+                      child:
+                      Image.asset(
+                        'assets/icons/non-veg-mark.jpg',
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
                   // 👁️ View All Button
                   ElevatedButton(
                     onPressed: () {

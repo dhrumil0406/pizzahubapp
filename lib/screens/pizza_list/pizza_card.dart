@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import '../../models/category_model.dart';
 import '../../models/pizza_model.dart';
 import 'pizza_screen.dart';
 
 class PizzaCard extends StatelessWidget {
   final Pizza pizza;
+  final PizzaCategory category;
 
-  const PizzaCard({super.key, required this.pizza});
+  const PizzaCard({super.key, required this.pizza, required this.category});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +16,9 @@ class PizzaCard extends StatelessWidget {
         // ✅ Navigate to PizzaScreen
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const PizzaScreen()),
+          MaterialPageRoute(
+            builder: (context) => PizzaScreen(pizza: pizza,category: category,),
+          ),
         );
       },
       child: Container(
@@ -73,29 +77,41 @@ class PizzaCard extends StatelessWidget {
                 const SizedBox(width: 8),
 
                 /// Fixed-size cart icon
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 4,
-                        offset: Offset(2, 2),
-                      ),
-                    ],
-                  ),
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: const Icon(
-                      Icons.add_shopping_cart,
-                      color: Colors.orange,
+                if (category.iscombo == 0)
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
+                          offset: Offset(2, 2),
+                        ),
+                      ],
                     ),
-                    onPressed: () {},
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(
+                        Icons.add_shopping_cart,
+                        color: Colors.orange,
+                      ),
+                      onPressed: () {},
+                    ),
+                  )
+                else
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    height: 35,
+                    child: Image.asset(
+                      category.cattype == 1
+                          ? 'assets/icons/veg-mark.jpg'
+                          : 'assets/icons/non-veg-mark.jpg',
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -129,27 +145,56 @@ class PizzaCard extends StatelessWidget {
                       vertical: 8,
                     ),
                   ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 8,
+                if (category.iscombo == 0)
+                  Row(
+                    children: [
+                      if (category.cattype == 1)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 8,
+                          ),
+                          height: 50,
+                          child: Image.asset(
+                            'assets/icons/veg-mark.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      else
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 8,
+                          ),
+                          height: 50,
+                          child: Image.asset(
+                            'assets/icons/non-veg-mark.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
+                        decoration: const BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(25),
+                            topRight: Radius.circular(30),
+                            bottomRight: Radius.circular(30),
+                          ),
+                        ),
+                        child: Text(
+                          "₹${pizza.pizzaprice.toStringAsFixed(0)}",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  decoration: const BoxDecoration(
-                    color: Colors.orange,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(25),
-                      topRight: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
-                    ),
-                  ),
-                  child: Text(
-                    "₹${pizza.pizzaprice.toStringAsFixed(0)}",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
               ],
             ),
           ],

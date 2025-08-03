@@ -91,20 +91,24 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CarouselSlider(
-              items: List.generate(3, (index) {
+              items: [
+                'assets/images/b1.png',
+                'assets/images/b2.png',
+                'assets/images/b3.png',
+              ].map((imagePath) {
                 return Container(
                   margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    image: const DecorationImage(
-                      image: AssetImage('assets/images/About.png'),
+                    image: DecorationImage(
+                      image: AssetImage(imagePath),
                       fit: BoxFit.cover,
                     ),
                   ),
                 );
-              }),
+              }).toList(),
               options: CarouselOptions(
-                height: 200,
+                height: 180,
                 enlargeCenterPage: true,
                 autoPlay: true,
                 aspectRatio: 16 / 9,
@@ -112,10 +116,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+              padding: EdgeInsets.only(left: 16.0, top: 10),
               child: Text("Categories",
                   style: TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold)),
+                      fontSize: 22, fontWeight: FontWeight.bold)),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 12),
