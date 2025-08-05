@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 enlargeCenterPage: true,
                 autoPlay: true,
                 aspectRatio: 16 / 9,
-                viewportFraction: 0.8,
+                viewportFraction: 0.9,
               ),
             ),
             const Padding(

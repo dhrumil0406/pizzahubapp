@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../models/category_model.dart';
 import '../../screens/home/home_screen.dart';
 import '../../models/pizza_model.dart';
 import '../../services/cart_service.dart';
 import 'cart_item_card.dart';
+import 'combo_cart_item_card.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -26,10 +28,24 @@ class _CartScreenState extends State<CartScreen> {
       final items = await CartService.fetchCartItems(userId);
       if (items.isNotEmpty) {
         setState(() {
-          cartItems = items.map((item) => {
-            'pizza': Pizza.fromJson(item),
-            'quantity': int.parse(item['quantity'].toString()),
-            'cartitemid': int.parse(item['cartitemid'].toString()),
+          cartItems = items.map((item) {
+            if (item['catid'] != null && item['catid'].toString() != 'null') {
+              // Item is a combo
+              return {
+                'combo': PizzaCategory.fromJson(item),
+                'quantity': int.parse(item['quantity'].toString()),
+                'cartitemid': int.parse(item['cartitemid'].toString()),
+                'isCombo': true,
+              };
+            } else {
+              // Item is a pizza
+              return {
+                'pizza': Pizza.fromJson(item),
+                'quantity': int.parse(item['quantity'].toString()),
+                'cartitemid': int.parse(item['cartitemid'].toString()),
+                'isCombo': false,
+              };
+            }
           }).toList();
         });
       } else {
@@ -39,6 +55,7 @@ class _CartScreenState extends State<CartScreen> {
       print('Error loading cart: $e');
     }
   }
+
 
   void incrementQuantity(int index) async {
     final current = cartItems[index];
@@ -66,15 +83,33 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  double get subtotal => cartItems.fold(
-      0, (sum, item) => sum + item['pizza'].pizzaprice * item['quantity']);
+  double get subtotal => cartItems.fold(0, (sum, item) {
+    double price = 0;
 
-  double get totalDiscount => cartItems.fold(
-      0,
-          (sum, item) =>
-      sum +
-          (item['pizza'].pizzaprice * item['pizza'].discount / 100) *
-              item['quantity']);
+    if (item['pizza'] != null) {
+      price = item['pizza'].pizzaprice;
+    } else if (item['combo'] != null) {
+      price = item['combo'].comboprice;
+    }
+
+    return sum + price * item['quantity'];
+  });
+
+  double get totalDiscount => cartItems.fold(0, (sum, item) {
+    double price = 0;
+    double discount = 0;
+
+    if (item['pizza'] != null) {
+      price = item['pizza'].pizzaprice ?? 0;
+      discount = item['pizza'].discount ?? 0;
+    } else if (item['combo'] != null) {
+      price = item['combo'].comboprice ?? 0;
+      discount = item['combo'].discount ?? 0;
+    }
+
+    return sum + ((price * discount / 100) * item['quantity']);
+  });
+
 
   double get finalTotal => subtotal - totalDiscount;
 
@@ -141,33 +176,50 @@ class _CartScreenState extends State<CartScreen> {
           centerTitle: true,
         ),
         body: cartItems.isEmpty
-            ? const Center(child: Text("Your cart is empty."))
+            ? const Center(child: Text('Your cart is empty'))
             : ListView(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.only(bottom: 24),
           children: [
-            ...List.generate(
-              cartItems.length,
-                  (index) {
-                final item = cartItems[index];
-                return CartItemCard(
-                  pizza: item['pizza'],
+            ...cartItems.asMap().entries.map((entry) {
+              final index = entry.key;
+              final item = entry.value;
+
+              if (item['isCombo'] == true) {
+                final PizzaCategory? combo = item['combo'];
+                if (combo == null) return const SizedBox();
+                return ComboCartItemCard(
+                  category: combo,
                   quantity: item['quantity'],
                   onAdd: () => incrementQuantity(index),
                   onRemove: () => decrementQuantity(index),
                   onDelete: () => deleteItem(index),
                 );
-              },
-            ),
-            const SizedBox(height: 20),
+              } else {
+                final Pizza? pizza = item['pizza'];
+                if (pizza == null) return const SizedBox();
+                return CartItemCard(
+                  pizza: pizza,
+                  quantity: item['quantity'],
+                  onAdd: () => incrementQuantity(index),
+                  onRemove: () => decrementQuantity(index),
+                  onDelete: () => deleteItem(index),
+                );
+              }
+            }).toList(),
+
+            const SizedBox(height: 12),
+
+            // 🟢 The cart summary widget after all items
             cartSummary(
               subtotal: subtotal,
               totalDiscount: totalDiscount,
               finalTotal: finalTotal,
             ),
-            const SizedBox(height: 20),
+
+            const SizedBox(height: 24), // spacing at bottom
           ],
         ),
-      ),
+      )
     );
   }
 

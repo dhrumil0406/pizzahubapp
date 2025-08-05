@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import '../../models/pizza_model.dart';
+import '../../models/category_model.dart';
 
-class CartItemCard extends StatelessWidget {
-  final Pizza pizza;
+class ComboCartItemCard extends StatelessWidget {
+  final PizzaCategory category;
   final int quantity;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
   final VoidCallback onDelete;
 
-  const CartItemCard({
+  const ComboCartItemCard({
     super.key,
-    required this.pizza,
+    required this.category,
     required this.quantity,
     required this.onAdd,
     required this.onRemove,
@@ -19,10 +19,10 @@ class CartItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double originalPrice = pizza.pizzaprice;
+    final double originalPrice = category.comboprice;
     final double totalOriginalPrice = originalPrice * quantity;
     final double discountedPrice =
-        totalOriginalPrice - (totalOriginalPrice * pizza.discount / 100);
+        totalOriginalPrice - ((totalOriginalPrice * category.discount) / 100);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -34,20 +34,19 @@ class CartItemCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // 🍕 Pizza Image and Quantity Buttons Below
+          // 🍕 Combo Image and Quantity Buttons
           Column(
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.asset(
-                  'assets/pizzaimages/${pizza.pizzaimage}',
+                  'assets/catimages/${category.catimage}',
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(height: 8),
-              // Quantity Buttons
               Row(
                 children: [
                   _quantityButton("-", onRemove),
@@ -70,18 +69,18 @@ class CartItemCard extends StatelessWidget {
 
           const SizedBox(width: 12),
 
-          // 📦 Pizza Details
+          // 📦 Combo Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 🍕 Pizza Name and ❌ Remove Icon
+                // 🍕 Combo Name and ❌ Remove Icon
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: Text(
-                        pizza.pizzaname,
+                        category.catname,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -113,10 +112,11 @@ class CartItemCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                // 💲 Original price details
                 Row(
                   children: [
                     Text(
-                      "₹${pizza.pizzaprice.toStringAsFixed(2)}",
+                      "₹${category.comboprice.toStringAsFixed(2)}",
                       style: const TextStyle(
                         fontSize: 14,
                         color: Colors.black87,

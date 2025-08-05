@@ -32,9 +32,9 @@ class PizzaCategory {
       cattype: int.tryParse(json['cattype'].toString()) ?? 0,
       iscombo: int.tryParse(json['iscombo'].toString()) ?? 0,
       comboprice: double.tryParse(json['comboprice'].toString()) ?? 0.0,
-      discount: double.tryParse(json['discount'].toString()) ?? 0.0,
-      catcreatedate: DateTime.parse(json['catcreatedate']),
-      catupdatedate: DateTime.parse(json['catupdatedate'])
+      discount: double.tryParse(json['catdiscount'].toString()) ?? 0.0,
+      catcreatedate: DateTime.tryParse(json['catcreatedate']?.toString() ?? '') ?? DateTime.now(),
+      catupdatedate: DateTime.tryParse(json['catupdatedate']?.toString() ?? '') ?? DateTime.now(),
     );
   }
 

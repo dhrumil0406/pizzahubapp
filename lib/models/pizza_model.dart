@@ -29,7 +29,7 @@ class Pizza {
       pizzaimage: json['pizzaimage']?.toString() ?? '',
       pizzadesc: json['pizzadesc']?.toString() ?? '',
       catid: int.tryParse(json['catid']?.toString() ?? '') ?? 0,
-      discount: double.tryParse(json['discount']?.toString() ?? '') ?? 0.0,
+      discount: double.tryParse(json['pizzadiscount']?.toString() ?? '') ?? 0.0,
       pizzacreatedate: DateTime.tryParse(json['pizzacreatedate']?.toString() ?? '') ?? DateTime.now(),
       pizzaupdatedate: DateTime.tryParse(json['pizzaupdatedate']?.toString() ?? '') ?? DateTime.now(),
     );
