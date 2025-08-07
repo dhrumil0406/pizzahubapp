@@ -54,8 +54,8 @@ class PizzaCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
                     'assets/pizzaimages/${pizza.pizzaimage}',
-                    width: 80,
-                    height: 80,
+                    width: 70,
+                    height: 70,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -77,7 +77,7 @@ class PizzaCard extends StatelessWidget {
                       Text(
                         pizza.pizzadesc,
                         style: const TextStyle(
-                          fontSize: 14,
+                          fontSize: 13,
                           color: Colors.black54,
                         ),
                         maxLines: 2,
@@ -91,8 +91,8 @@ class PizzaCard extends StatelessWidget {
                 /// Add to Cart Button
                 if (category.iscombo == 0)
                   Container(
-                    width: 50,
-                    height: 50,
+                    width: 45,
+                    height: 45,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.white,
@@ -113,7 +113,7 @@ class PizzaCard extends StatelessWidget {
                 else
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    height: 35,
+                    height: 30,
                     child: Image.asset(
                       category.cattype == 1
                           ? 'assets/icons/veg-mark.jpg'
@@ -123,13 +123,12 @@ class PizzaCard extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (pizza.discount > 0)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.orange.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -149,7 +148,7 @@ class PizzaCard extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-                        height: 50,
+                        height: 45,
                         child: Image.asset(
                           category.cattype == 1
                               ? 'assets/icons/veg-mark.jpg'
@@ -158,7 +157,7 @@ class PizzaCard extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
                         decoration: const BoxDecoration(
                           color: Colors.orange,
                           borderRadius: BorderRadius.only(

@@ -41,12 +41,12 @@ class ComboCartItemCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 child: Image.asset(
                   'assets/catimages/${category.catimage}',
-                  width: 80,
-                  height: 80,
+                  width: 65,
+                  height: 65,
                   fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 5),
               Row(
                 children: [
                   _quantityButton("-", onRemove),
@@ -106,7 +106,7 @@ class ComboCartItemCard extends StatelessWidget {
                         child: const Icon(
                           Icons.close,
                           color: Colors.orange,
-                          size: 18,
+                          size: 20,
                         ),
                       ),
                     ),
@@ -141,15 +141,15 @@ class ComboCartItemCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 25),
                 Row(
                   children: [
                     const Spacer(),
                     // Discounted Price Container
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 8,
+                        horizontal: 8,
+                        vertical: 6,
                       ),
                       decoration: const BoxDecoration(
                         color: Colors.orange,
@@ -163,6 +163,7 @@ class ComboCartItemCard extends StatelessWidget {
                         "₹${discountedPrice.toStringAsFixed(2)}",
                         style: const TextStyle(
                           color: Colors.white,
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

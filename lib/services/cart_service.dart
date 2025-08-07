@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../utils/API.dart';
 
 class CartService {
-  static const String baseUrl = "http://10.0.2.2/pizzahubapp/";
+  // static const String baseUrl = "http://10.0.2.2/pizzahubapp/";
 
   static Future<List<Map<String, dynamic>>> fetchCartItems(int userId) async {
     final response = await http.get(

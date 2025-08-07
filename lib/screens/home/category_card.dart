@@ -108,8 +108,8 @@ class PizzaCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   if(category.iscombo == 1)
                     Text(
-                      '${category.comboprice.toStringAsFixed(1)}%',
-                      style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      '₹${category.comboprice.toStringAsFixed(1)}',
+                      style: const TextStyle(fontSize: 11, color: Colors.brown, fontWeight: FontWeight.bold),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -192,29 +192,13 @@ class PizzaCard extends StatelessWidget {
                   : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if(category.cattype == 1)
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 8,
-                      ),
-                      height: 50,
-                      child:
-                      Image.asset(
-                        'assets/icons/veg-mark.jpg',
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  else
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 8,
-                      ),
-                      height: 50,
-                      child:
-                      Image.asset(
-                        'assets/icons/non-veg-mark.jpg',
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+                      height: 48,
+                      child: Image.asset(
+                        category.cattype == 1
+                        ? 'assets/icons/veg-mark.jpg'
+                        : 'assets/icons/non-veg-mark.jpg',
                         fit: BoxFit.cover,
                       ),
                     ),

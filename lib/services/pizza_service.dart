@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/pizza_model.dart';
+import '../utils/API.dart';
 
 class PizzaService {
-  static const String baseUrl = 'http://10.0.2.2/pizzahubapp/viewPizzaList.php';
-  // static const String baseUrl2 = 'http://10.104.169.30/pizzahubapp/viewPizzaList.php';
+  static const String url = '${baseUrl}viewPizzaList.php';
 
   static Future<List<Pizza>> fetchPizzas(int categoryId) async {
     await Future.delayed(const Duration(milliseconds: 300));
     final response = await http.post(
-      Uri.parse(baseUrl),
+      Uri.parse(url),
       body: {'categoryId': categoryId.toString()},
     );
 

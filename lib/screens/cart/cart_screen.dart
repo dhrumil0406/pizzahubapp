@@ -205,7 +205,7 @@ class _CartScreenState extends State<CartScreen> {
                   onDelete: () => deleteItem(index),
                 );
               }
-            }).toList(),
+            }),
 
             const SizedBox(height: 12),
 
