@@ -5,6 +5,7 @@ import '../../models/pizza_model.dart';
 import '../../services/cart_service.dart';
 import 'cart_item_card.dart';
 import 'combo_cart_item_card.dart';
+import '../../utils/user_preferences.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -15,17 +16,30 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   List<Map<String, dynamic>> cartItems = [];
-  int userId = 1; // Replace with your session userId
+  String? userId; // Nullable until loaded
+
 
   @override
   void initState() {
     super.initState();
-    loadCartItems();
+    _initializeCart();
+  }
+
+  Future<void> _initializeCart() async {
+    userId = await UserPreferences.getUserId();
+
+    if (userId != null) {
+      await loadCartItems();
+    }
+  }
+
+  bool isTablet(BuildContext context) {
+    return MediaQuery.of(context).size.width >= 600;
   }
 
   Future<void> loadCartItems() async {
     try {
-      final items = await CartService.fetchCartItems(userId);
+      final items = await CartService.fetchCartItems(int.parse(userId!));
       if (items.isNotEmpty) {
         setState(() {
           cartItems = items.map((item) {
@@ -56,12 +70,12 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-
   void incrementQuantity(int index) async {
     final current = cartItems[index];
     int newQty = current['quantity'] + 1;
 
-    bool success = await CartService.updateQuantity(current['cartitemid'], newQty);
+    bool success =
+    await CartService.updateQuantity(current['cartitemid'], newQty);
     if (success) {
       setState(() {
         cartItems[index]['quantity'] = newQty;
@@ -74,7 +88,8 @@ class _CartScreenState extends State<CartScreen> {
     if (current['quantity'] > 1) {
       int newQty = current['quantity'] - 1;
 
-      bool success = await CartService.updateQuantity(current['cartitemid'], newQty);
+      bool success =
+      await CartService.updateQuantity(current['cartitemid'], newQty);
       if (success) {
         setState(() {
           cartItems[index]['quantity'] = newQty;
@@ -110,13 +125,12 @@ class _CartScreenState extends State<CartScreen> {
     return sum + ((price * discount / 100) * item['quantity']);
   });
 
-
   double get finalTotal => subtotal - totalDiscount;
 
   void deleteItem(int index) async {
     final cartItemId = cartItems[index]['cartitemid'];
 
-    bool success = await CartService.removeFromCart(userId, cartItemId);
+    bool success = await CartService.removeFromCart(int.parse(userId!), cartItemId);
     if (success) {
       setState(() {
         cartItems.removeAt(index);
@@ -130,8 +144,11 @@ class _CartScreenState extends State<CartScreen> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
+    final tablet = isTablet(context);
+
     return WillPopScope(
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
@@ -146,15 +163,18 @@ class _CartScreenState extends State<CartScreen> {
           backgroundColor: Colors.white,
           elevation: 0,
           leading: Container(
-            margin: const EdgeInsets.only(left: 16),
+            margin: EdgeInsets.only(left: tablet ? 16 : 16),
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white,
               boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_outlined,
-                  color: Colors.orange),
+              icon: Icon(
+                Icons.arrow_back_ios_new_outlined,
+                color: Colors.orange,
+                size: tablet ? 26 : 20,
+              ),
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
@@ -164,10 +184,10 @@ class _CartScreenState extends State<CartScreen> {
               },
             ),
           ),
-          title: const Text(
+          title: Text(
             "Pizza Cart",
             style: TextStyle(
-              fontSize: 26,
+              fontSize: tablet ? 32 : 26,
               fontFamily: 'amerika',
               color: Colors.orange,
               fontWeight: FontWeight.bold,
@@ -176,9 +196,18 @@ class _CartScreenState extends State<CartScreen> {
           centerTitle: true,
         ),
         body: cartItems.isEmpty
-            ? const Center(child: Text('Your cart is empty'))
+            ? Center(
+          child: Text(
+            'Your cart is empty',
+            style: TextStyle(fontSize: tablet ? 22 : 16),
+          ),
+        )
             : ListView(
-          padding: const EdgeInsets.only(bottom: 24),
+          padding: EdgeInsets.only(
+            bottom: tablet ? 32 : 24,
+            left: tablet ? 10 : 4,
+            right: tablet ? 10 : 4,
+          ),
           children: [
             ...cartItems.asMap().entries.map((entry) {
               final index = entry.key;
@@ -207,19 +236,19 @@ class _CartScreenState extends State<CartScreen> {
               }
             }),
 
-            const SizedBox(height: 12),
+            SizedBox(height: tablet ? 20 : 12),
 
-            // 🟢 The cart summary widget after all items
             cartSummary(
               subtotal: subtotal,
               totalDiscount: totalDiscount,
               finalTotal: finalTotal,
+              tablet: tablet,
             ),
 
-            const SizedBox(height: 24), // spacing at bottom
+            SizedBox(height: tablet ? 32 : 24),
           ],
         ),
-      )
+      ),
     );
   }
 
@@ -227,9 +256,10 @@ class _CartScreenState extends State<CartScreen> {
     required double subtotal,
     required double totalDiscount,
     required double finalTotal,
+    required bool tablet,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(tablet ? 24 : 16),
       margin: const EdgeInsets.only(left: 8, right: 8),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -239,33 +269,36 @@ class _CartScreenState extends State<CartScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _summaryRow("Subtotal", subtotal),
-          _summaryRow("Delivery Charges", 0),
-          _summaryRow("Total Discount", totalDiscount),
+          _summaryRow("Subtotal", subtotal, tablet: tablet),
+          _summaryRow("Delivery Charges", 0, tablet: tablet),
+          _summaryRow("Total Discount", totalDiscount, tablet: tablet),
           const Divider(height: 24, thickness: 1),
-          _summaryRow("Total", finalTotal, isBold: true),
+          _summaryRow("Total", finalTotal, isBold: true, tablet: tablet),
         ],
       ),
     );
   }
 
-  Widget _summaryRow(String title, double value, {bool isBold = false}) {
+  Widget _summaryRow(String title, double value,
+      {bool isBold = false, required bool tablet}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title,
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight:
-                  isBold ? FontWeight.bold : FontWeight.normal)),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: tablet ? 18 : 15,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
           Text(
             "₹${value.toStringAsFixed(2)}",
             style: TextStyle(
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
               color: isBold ? Colors.black : Colors.black87,
-              fontSize: 15,
+              fontSize: tablet ? 18 : 15,
             ),
           ),
         ],

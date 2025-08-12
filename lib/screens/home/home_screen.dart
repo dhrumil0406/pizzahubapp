@@ -32,13 +32,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     try {
       final categories = await CategoryService.fetchPizzaCategories(categoryId);
-      print("Fetched ${categories.length} categories");
       setState(() {
         pizzaCategories = categories;
       });
     } catch (e) {
-      // Optionally handle error
-      print("Error fetching categories: $e"); // Optional debug
+      print("Error fetching categories: $e");
     }
     setState(() => isLoading = false);
   }
@@ -58,16 +56,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Detect screen width
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= 600; // Tablet detection
+
+    // Grid settings based on device
+    final crossAxisCount = isTablet ? 3 : 2;
+    final childAspectRatio = isTablet ? 0.75 : 0.68;
+    final carouselHeight = isTablet ? 250.0 : 180.0;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text("PizzaHub",
-            style: TextStyle(
-                fontSize: 26,
-                fontFamily: 'amerika',
-                color: Colors.orange,
-                fontWeight: FontWeight.bold)),
+        title: Text(
+          "PizzaHub",
+          style: TextStyle(
+            fontSize: isTablet ? 34 : 26,
+            fontFamily: 'amerika',
+            color: Colors.orange,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -77,7 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
               boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
             ),
             child: IconButton(
-              icon: const Icon(Icons.search, color: Colors.orange),
+              icon: Icon(Icons.search,
+                  size: isTablet ? 30 : 24, color: Colors.orange),
               onPressed: () {},
             ),
           )
@@ -108,24 +119,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               }).toList(),
               options: CarouselOptions(
-                height: 180,
+                height: carouselHeight,
                 enlargeCenterPage: true,
                 autoPlay: true,
                 aspectRatio: 16 / 9,
-                viewportFraction: 0.9,
+                viewportFraction: isTablet ? 0.8 : 0.90,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 10),
-              child: Text("Categories",
-                  style: TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold)),
+            Padding(
+              padding:
+              const EdgeInsets.only(left: 16.0, top: 10, bottom: 4),
+              child: Text(
+                "Categories",
+                style: TextStyle(
+                  fontSize: isTablet ? 26 : 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 12),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Row(
                   children: categoryLabels.map((label) {
                     int id = getCategoryIdFromLabel(label);
@@ -142,16 +158,17 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16),
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
-                childAspectRatio: 0.68,
+                childAspectRatio: childAspectRatio,
               ),
               itemCount: pizzaCategories.length,
-              itemBuilder: (context, index) =>
-                  PizzaCard(category: pizzaCategories[index], allCategories: pizzaCategories),
+              itemBuilder: (context, index) => PizzaCard(
+                category: pizzaCategories[index],
+                allCategories: pizzaCategories,
+              ),
             )
           ],
         ),
