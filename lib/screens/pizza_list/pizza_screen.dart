@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
-
 import '../../models/pizza_model.dart';
 import '../../models/category_model.dart';
 import '../../services/cart_service.dart';
+import '../../utils/user_preferences.dart';
 
 class PizzaScreen extends StatelessWidget {
   final Pizza pizza;
   final PizzaCategory category;
   final bool isInCart; // Don't modify value
-  final int userId;
 
   const PizzaScreen({
     super.key,
     required this.pizza,
     required this.category,
     this.isInCart = false,
-    this.userId = 1
   });
   // final bool isInCart = false; // toggle to true to see "Go to Cart"
 
   Future<void> _handleAddToCart(BuildContext context) async {
-    final result = await CartService.addToCart(userId, pizza.pizzaid);
+    String? userId = await UserPreferences.getUserId();
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User not logged in")),
+      );
+      return;
+    }
+
+    final result = await CartService.addToCart(int.parse(userId), pizza.pizzaid);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result['message']),

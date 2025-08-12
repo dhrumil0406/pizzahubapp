@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../utils/API.dart';
+import '../utils/api.dart';
 import '../utils/user_preferences.dart';
 
 class AuthService {

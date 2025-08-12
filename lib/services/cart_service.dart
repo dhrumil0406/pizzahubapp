@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../utils/API.dart';
+import '../utils/api.dart';
 
 class CartService {
   // static const String baseUrl = "http://10.0.2.2/pizzahubapp/";

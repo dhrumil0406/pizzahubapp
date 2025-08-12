@@ -2,21 +2,28 @@ import 'package:flutter/material.dart';
 import '../../models/category_model.dart';
 import '../../services/cart_service.dart';
 import '../pizza_list/pizza_list.dart';
+import '../../utils/user_preferences.dart';
 
 class PizzaCard extends StatelessWidget {
   final PizzaCategory category;
   final List<PizzaCategory> allCategories;
-  final int userId;
 
   const PizzaCard({
     super.key,
     required this.category,
     required this.allCategories,
-    this.userId = 1
   });
 
   Future<void> _handleAddComboToCart(BuildContext context) async {
-    final result = await CartService.addComboToCart(userId, category.catid);
+    String? userId = await UserPreferences.getUserId();
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User not logged in")),
+      );
+      return;
+    }
+
+    final result = await CartService.addComboToCart(int.parse(userId), category.catid);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result['message']),

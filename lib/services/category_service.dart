@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/category_model.dart';
-import '../utils/API.dart';
+import '../utils/api.dart';
 
 class CategoryService {
   // static const String url = 'http://10.0.2.2/pizzahubapp/userIndex.php';

@@ -4,18 +4,17 @@ import '../../screens/pizza_list/category_button.dart';
 import '../../models/category_model.dart';
 import '../../models/pizza_model.dart';
 import '../../services/pizza_service.dart';
+import '../../utils/user_preferences.dart';
 import 'pizza_card.dart';
 
 class PizzaListScreen extends StatefulWidget {
   final String categoryId;
   final List<PizzaCategory> allCategories;
-  final int userId;
 
   const PizzaListScreen({
     super.key,
     required this.categoryId,
-    required this.allCategories,
-    this.userId = 1
+    required this.allCategories
   });
 
   @override
@@ -25,12 +24,19 @@ class PizzaListScreen extends StatefulWidget {
 class _PizzaListScreenState extends State<PizzaListScreen> {
   late int selectedCategoryId;
   late Future<List<Pizza>> getPizzaList;
+  String? userId;
 
   @override
   void initState() {
     super.initState();
     selectedCategoryId = int.parse(widget.categoryId);
-    getPizzaList = PizzaService.fetchPizzas(int.parse(widget.categoryId));
+    getPizzaList = PizzaService.fetchPizzas(selectedCategoryId);
+    _loadUserId(); // ✅ Fetch from preferences
+  }
+
+  Future<void> _loadUserId() async {
+    userId = await UserPreferences.getUserId();
+    setState(() {});
   }
 
   void fetchByCategory(int categoryId) {
@@ -47,7 +53,7 @@ class _PizzaListScreenState extends State<PizzaListScreen> {
   }
 
   Future<void> _handleAddComboToCart(BuildContext context) async {
-    final result = await CartService.addComboToCart(widget.userId, selectedCategoryId);
+    final result = await CartService.addComboToCart(int.parse(userId!), selectedCategoryId);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(result['message']),

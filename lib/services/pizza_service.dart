@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/pizza_model.dart';
-import '../utils/API.dart';
+import '../utils/api.dart';
 
 class PizzaService {
   static const String url = '${baseUrl}viewPizzaList.php';
