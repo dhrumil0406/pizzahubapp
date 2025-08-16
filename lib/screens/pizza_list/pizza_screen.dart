@@ -20,18 +20,19 @@ class PizzaScreen extends StatelessWidget {
   Future<void> _handleAddToCart(BuildContext context) async {
     String? userId = await UserPreferences.getUserId();
     if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("User not logged in")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("User not logged in")));
       return;
     }
 
-    final result = await CartService.addToCart(int.parse(userId), pizza.pizzaid);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(result['message']),
-      ),
+    final result = await CartService.addToCart(
+      int.parse(userId),
+      pizza.pizzaid,
     );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(result['message'])));
   }
 
   @override
@@ -51,6 +52,7 @@ class PizzaScreen extends StatelessWidget {
             icon: const Icon(
               Icons.arrow_back_ios_new_outlined,
               color: Colors.orange,
+              size: 24,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -217,7 +219,7 @@ class PizzaScreen extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          if(pizza.pizzaprice > 0)
+          if (pizza.pizzaprice > 0)
             Container(
               width: double.infinity,
               margin: const EdgeInsets.only(left: 18, bottom: 22, right: 18),

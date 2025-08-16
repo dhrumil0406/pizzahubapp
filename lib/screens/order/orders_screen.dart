@@ -12,7 +12,7 @@ class OrdersScreen extends StatelessWidget {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (route) => false,
+          (route) => false,
         );
         return false; // block default back button
       },
@@ -28,12 +28,16 @@ class OrdersScreen extends StatelessWidget {
               boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.orange),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_outlined,
+                color: Colors.orange,
+                size: 24,
+              ),
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()),
-                      (route) => false,
+                  (route) => false,
                 );
               },
             ),
@@ -60,7 +64,7 @@ class OrdersScreen extends StatelessWidget {
                 icon: const Icon(Icons.search, color: Colors.orange),
                 onPressed: () {},
               ),
-            )
+            ),
           ],
         ),
         body: const Center(

@@ -2,21 +2,160 @@ import 'package:flutter/material.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/login/login_screen.dart';
 import '../../utils/user_preferences.dart';
+import '../../services/user_service.dart';
+import '../../models/user_model.dart';
+import 'edit_profile_screen.dart';
+import 'address_screen.dart';
+import 'order_tracking_screen.dart';
+import 'terms_conditions_screen.dart';
+import 'contact_us_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  User? _user;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userId = await UserPreferences.getUserId(); // stored userId
+    if (userId != null) {
+      final user = await UserService.fetchUser(int.parse(userId));
+      setState(() {
+        _user = user;
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Background image
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  image: const DecorationImage(
+                    image: AssetImage("assets/images/popup_bg.png"),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 30,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "Logout",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      "Logout will not delete any data.\nYou can still log in with this account.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 15, color: Colors.black54),
+                    ),
+                    const SizedBox(height: 25),
+
+                    // Buttons Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context); // close dialog
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey.shade300,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await _logout(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black87,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: const Text(
+                              "Logout",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _logout(BuildContext context) async {
-    await UserPreferences.logoutUserData(); // clear userid
+    await UserPreferences.logoutUserData(); // clear saved userid
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
-          (route) => false,
+      (route) => false,
     );
   }
 
   void _deleteAccount(BuildContext context) {
-    // Handle delete account logic
+    // TODO: implement delete account logic
   }
 
   @override
@@ -26,7 +165,7 @@ class ProfileScreen extends StatelessWidget {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (route) => false,
+          (route) => false,
         );
         return false; // block default back button
       },
@@ -51,7 +190,7 @@ class ProfileScreen extends StatelessWidget {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()),
-                      (route) => false,
+                  (route) => false,
                 );
               },
             ),
@@ -75,85 +214,101 @@ class ProfileScreen extends StatelessWidget {
                 boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
               ),
               child: IconButton(
-                icon: const Icon(
-                  Icons.edit,
-                  color: Colors.orange,
-                ), // Pencil icon
+                icon: const Icon(Icons.edit, color: Colors.orange),
                 onPressed: () {
-                  // Handle edit profile
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EditProfileScreen(),
+                    ),
+                  );
                 },
               ),
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 100), // leave space for bottom buttons
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              // Profile image
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
+        body: _isLoading
+            ? const Center()
+            : SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 100),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    // Profile image
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: const CircleAvatar(
+                        radius: 55,
+                        backgroundImage: AssetImage(
+                          'assets/images/profilePic.jpg',
+                        ),
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // ✅ Dynamic Name
+                    Text(
+                      _user != null
+                          ? "${_user!.firstname} ${_user!.lastname}"
+                          : "Unknown User",
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                    const SizedBox(height: 5),
+
+                    // ✅ Dynamic Phone
+                    Text(
+                      _user?.phoneno ?? "",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black54,
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // Buttons
+                    _buildProfileButton(
+                      Icons.location_on_outlined,
+                      "My Addresses",
+                      Colors.orange,
+                      const AddressScreen(),
+                    ),
+                    _buildProfileButton(
+                      Icons.location_searching,
+                      "Track Order",
+                      Colors.orange,
+                      const OrderTrackingScreen(),
+                    ),
+                    _buildProfileButton(
+                      Icons.description_outlined,
+                      "Terms & Conditions",
+                      Colors.orange,
+                      const TermsConditionsScreen(),
+                    ),
+                    _buildProfileButton(
+                      Icons.message_outlined,
+                      "Contact Us",
+                      Colors.orange,
+                      const ContactUsScreen(),
                     ),
                   ],
                 ),
-                child: const CircleAvatar(
-                  radius: 55,
-                  backgroundImage: AssetImage('assets/images/profilePic.jpg'),
-                  backgroundColor: Colors.white,
-                ),
               ),
-              const SizedBox(height: 16),
-
-              // Name
-              const Text(
-                "John Doe",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-
-              // Phone number
-              const SizedBox(height: 5),
-              const Text(
-                "+91 9876543210",
-                style: TextStyle(fontSize: 16, color: Colors.black54),
-              ),
-
-              const SizedBox(height: 30),
-
-              // Buttons List
-              _buildProfileButton(
-                Icons.location_on_outlined,
-                "My Addresses",
-                Colors.orange,
-              ),
-              _buildProfileButton(
-                Icons.location_searching,
-                "Track Order",
-                Colors.orange,
-              ),
-              _buildProfileButton(
-                Icons.description_outlined,
-                "Terms & Conditions",
-                Colors.orange,
-              ),
-              _buildProfileButton(
-                Icons.message_outlined,
-                "Contact Us",
-                Colors.orange,
-              ),
-            ],
-          ),
-        ),
 
         // Fixed Bottom Buttons
         bottomNavigationBar: Padding(
@@ -162,7 +317,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () => _logout(context),
+                  onPressed: () => _showLogoutDialog(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black87,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -208,28 +363,35 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileButton(IconData icon, String title, Color color) {
+  Widget _buildProfileButton(
+    IconData icon,
+    String title,
+    Color color,
+    Widget screen,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: GestureDetector(
         onTap: () {
-          // Handle navigation
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => screen),
+          );
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           decoration: BoxDecoration(
-            color: Colors.orange,
-            borderRadius: BorderRadius.circular(30), // pill shape
+            color: color,
+            borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: Colors.orange.withOpacity(0.3),
+                color: color.withOpacity(0.3),
                 blurRadius: 10,
                 offset: const Offset(0, 3),
               ),
             ],
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Icon(icon, color: Colors.white, size: 24),
               const SizedBox(width: 15),

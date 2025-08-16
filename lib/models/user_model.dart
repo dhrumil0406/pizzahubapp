@@ -4,7 +4,9 @@ class User {
   final String firstname;
   final String lastname;
   final String email;
-  final BigInt phone;
+  final String phoneno;
+  final String usertype;
+  final DateTime updatedAt;
 
   User({
     required this.userid,
@@ -12,7 +14,9 @@ class User {
     required this.firstname,
     required this.lastname,
     required this.email,
-    required this.phone,
+    required this.phoneno,
+    required this.usertype,
+    required this.updatedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -22,7 +26,9 @@ class User {
       firstname: json['firstname']?.toString() ?? '',
       lastname: json['lastname']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
-      phone: BigInt.tryParse(json['phone']?.toString() ?? '0') ?? BigInt.zero,
+      phoneno: json['phoneno']?.toString() ?? '',
+      usertype: json['usertype']?.toString() ?? '',
+      updatedAt: DateTime.tryParse(json['updated_at']?.toString() ?? '') ?? DateTime(1970, 1, 1),
     );
   }
 
@@ -33,7 +39,9 @@ class User {
       'firstname': firstname,
       'lastname': lastname,
       'email': email,
-      'phone': phone.toString(),
+      'phoneno': phoneno,
+      'usertype': usertype,
+      'updated_at': updatedAt.toIso8601String(),
     };
   }
 }

@@ -18,7 +18,6 @@ class _CartScreenState extends State<CartScreen> {
   List<Map<String, dynamic>> cartItems = [];
   String? userId; // Nullable until loaded
 
-
   @override
   void initState() {
     super.initState();
@@ -74,8 +73,10 @@ class _CartScreenState extends State<CartScreen> {
     final current = cartItems[index];
     int newQty = current['quantity'] + 1;
 
-    bool success =
-    await CartService.updateQuantity(current['cartitemid'], newQty);
+    bool success = await CartService.updateQuantity(
+      current['cartitemid'],
+      newQty,
+    );
     if (success) {
       setState(() {
         cartItems[index]['quantity'] = newQty;
@@ -88,8 +89,10 @@ class _CartScreenState extends State<CartScreen> {
     if (current['quantity'] > 1) {
       int newQty = current['quantity'] - 1;
 
-      bool success =
-      await CartService.updateQuantity(current['cartitemid'], newQty);
+      bool success = await CartService.updateQuantity(
+        current['cartitemid'],
+        newQty,
+      );
       if (success) {
         setState(() {
           cartItems[index]['quantity'] = newQty;
@@ -130,14 +133,17 @@ class _CartScreenState extends State<CartScreen> {
   void deleteItem(int index) async {
     final cartItemId = cartItems[index]['cartitemid'];
 
-    bool success = await CartService.removeFromCart(int.parse(userId!), cartItemId);
+    bool success = await CartService.removeFromCart(
+      int.parse(userId!),
+      cartItemId,
+    );
     if (success) {
       setState(() {
         cartItems.removeAt(index);
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Item removed")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Item removed")));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Failed to remove item from cart")),
@@ -154,7 +160,7 @@ class _CartScreenState extends State<CartScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (route) => false,
+          (route) => false,
         );
         return false;
       },
@@ -173,13 +179,13 @@ class _CartScreenState extends State<CartScreen> {
               icon: Icon(
                 Icons.arrow_back_ios_new_outlined,
                 color: Colors.orange,
-                size: tablet ? 26 : 20,
+                size: tablet ? 26 : 24,
               ),
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()),
-                      (route) => false,
+                  (route) => false,
                 );
               },
             ),
@@ -197,57 +203,57 @@ class _CartScreenState extends State<CartScreen> {
         ),
         body: cartItems.isEmpty
             ? Center(
-          child: Text(
-            'Your cart is empty',
-            style: TextStyle(fontSize: tablet ? 22 : 16),
-          ),
-        )
+                child: Text(
+                  'Your cart is empty',
+                  style: TextStyle(fontSize: tablet ? 22 : 16),
+                ),
+              )
             : ListView(
-          padding: EdgeInsets.only(
-            bottom: tablet ? 32 : 24,
-            left: tablet ? 10 : 4,
-            right: tablet ? 10 : 4,
-          ),
-          children: [
-            ...cartItems.asMap().entries.map((entry) {
-              final index = entry.key;
-              final item = entry.value;
+                padding: EdgeInsets.only(
+                  bottom: tablet ? 32 : 24,
+                  left: tablet ? 10 : 4,
+                  right: tablet ? 10 : 4,
+                ),
+                children: [
+                  ...cartItems.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
 
-              if (item['isCombo'] == true) {
-                final PizzaCategory? combo = item['combo'];
-                if (combo == null) return const SizedBox();
-                return ComboCartItemCard(
-                  category: combo,
-                  quantity: item['quantity'],
-                  onAdd: () => incrementQuantity(index),
-                  onRemove: () => decrementQuantity(index),
-                  onDelete: () => deleteItem(index),
-                );
-              } else {
-                final Pizza? pizza = item['pizza'];
-                if (pizza == null) return const SizedBox();
-                return CartItemCard(
-                  pizza: pizza,
-                  quantity: item['quantity'],
-                  onAdd: () => incrementQuantity(index),
-                  onRemove: () => decrementQuantity(index),
-                  onDelete: () => deleteItem(index),
-                );
-              }
-            }),
+                    if (item['isCombo'] == true) {
+                      final PizzaCategory? combo = item['combo'];
+                      if (combo == null) return const SizedBox();
+                      return ComboCartItemCard(
+                        category: combo,
+                        quantity: item['quantity'],
+                        onAdd: () => incrementQuantity(index),
+                        onRemove: () => decrementQuantity(index),
+                        onDelete: () => deleteItem(index),
+                      );
+                    } else {
+                      final Pizza? pizza = item['pizza'];
+                      if (pizza == null) return const SizedBox();
+                      return CartItemCard(
+                        pizza: pizza,
+                        quantity: item['quantity'],
+                        onAdd: () => incrementQuantity(index),
+                        onRemove: () => decrementQuantity(index),
+                        onDelete: () => deleteItem(index),
+                      );
+                    }
+                  }),
 
-            SizedBox(height: tablet ? 20 : 12),
+                  SizedBox(height: tablet ? 20 : 12),
 
-            cartSummary(
-              subtotal: subtotal,
-              totalDiscount: totalDiscount,
-              finalTotal: finalTotal,
-              tablet: tablet,
-            ),
+                  cartSummary(
+                    subtotal: subtotal,
+                    totalDiscount: totalDiscount,
+                    finalTotal: finalTotal,
+                    tablet: tablet,
+                  ),
 
-            SizedBox(height: tablet ? 32 : 24),
-          ],
-        ),
+                  SizedBox(height: tablet ? 32 : 24),
+                ],
+              ),
       ),
     );
   }
@@ -279,8 +285,12 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _summaryRow(String title, double value,
-      {bool isBold = false, required bool tablet}) {
+  Widget _summaryRow(
+    String title,
+    double value, {
+    bool isBold = false,
+    required bool tablet,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(

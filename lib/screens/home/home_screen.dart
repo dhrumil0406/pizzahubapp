@@ -87,92 +87,99 @@ class _HomeScreenState extends State<HomeScreen> {
               boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
             ),
             child: IconButton(
-              icon: Icon(Icons.search,
-                  size: isTablet ? 30 : 24, color: Colors.orange),
+              icon: Icon(
+                Icons.search,
+                size: isTablet ? 30 : 24,
+                color: Colors.orange,
+              ),
               onPressed: () {},
             ),
-          )
+          ),
         ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 80),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CarouselSlider(
-              items: [
-                'assets/images/b4.png',
-                'assets/images/b1.png',
-                'assets/images/b2.png',
-              ].map((imagePath) {
-                return Container(
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(
-                      image: AssetImage(imagePath),
-                      fit: BoxFit.cover,
+              padding: const EdgeInsets.only(bottom: 80),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CarouselSlider(
+                    items:
+                        [
+                          'assets/images/b4.png',
+                          'assets/images/b1.png',
+                          'assets/images/b2.png',
+                        ].map((imagePath) {
+                          return Container(
+                            margin: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              image: DecorationImage(
+                                image: AssetImage(imagePath),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                    options: CarouselOptions(
+                      height: carouselHeight,
+                      enlargeCenterPage: true,
+                      autoPlay: true,
+                      aspectRatio: 16 / 9,
+                      viewportFraction: isTablet ? 0.8 : 0.90,
                     ),
                   ),
-                );
-              }).toList(),
-              options: CarouselOptions(
-                height: carouselHeight,
-                enlargeCenterPage: true,
-                autoPlay: true,
-                aspectRatio: 16 / 9,
-                viewportFraction: isTablet ? 0.8 : 0.90,
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16.0,
+                      top: 10,
+                      bottom: 4,
+                    ),
+                    child: Text(
+                      "Categories",
+                      style: TextStyle(
+                        fontSize: isTablet ? 26 : 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: categoryLabels.map((label) {
+                          int id = getCategoryIdFromLabel(label);
+                          return FilterButton(
+                            label: label,
+                            isSelected: selectedCategoryId == id,
+                            onTap: () => fetchCategories(id),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                  GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                      childAspectRatio: childAspectRatio,
+                    ),
+                    itemCount: pizzaCategories.length,
+                    itemBuilder: (context, index) => PizzaCard(
+                      category: pizzaCategories[index],
+                      allCategories: pizzaCategories,
+                    ),
+                  ),
+                ],
               ),
             ),
-            Padding(
-              padding:
-              const EdgeInsets.only(left: 16.0, top: 10, bottom: 4),
-              child: Text(
-                "Categories",
-                style: TextStyle(
-                  fontSize: isTablet ? 26 : 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  children: categoryLabels.map((label) {
-                    int id = getCategoryIdFromLabel(label);
-                    return FilterButton(
-                      label: label,
-                      isSelected: selectedCategoryId == id,
-                      onTap: () => fetchCategories(id),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-            GridView.builder(
-              padding: const EdgeInsets.all(16),
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: childAspectRatio,
-              ),
-              itemCount: pizzaCategories.length,
-              itemBuilder: (context, index) => PizzaCard(
-                category: pizzaCategories[index],
-                allCategories: pizzaCategories,
-              ),
-            )
-          ],
-        ),
-      ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),
     );
   }
