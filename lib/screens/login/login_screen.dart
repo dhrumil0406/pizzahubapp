@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   bool isLoading = false;
+  bool _obscurePassword = true; // 🔹 Controls password visibility
 
   void _submit() async {
     if (_formKey.currentState!.validate()) {
@@ -31,9 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       setState(() => isLoading = false);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
 
       if (message.toLowerCase().contains('success')) {
         // Navigate only on successful login
@@ -58,25 +59,26 @@ class _LoginScreenState extends State<LoginScreen> {
                 Image.asset('assets/images/pizza_chef.png', width: 200),
                 const SizedBox(height: 0),
                 Transform.translate(
-                  offset: Offset(0, -50),
+                  offset: const Offset(0, -50),
                   child: Column(
                     children: [
                       const Text(
                         'Welcome Back!',
-                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, fontFamily: 'Amerika'),
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Amerika',
+                        ),
                       ),
-                      const Text('Login with your verified credentials.')
+                      const Text('Login with your verified credentials.'),
                     ],
                   ),
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
+                  child: const Text(
                     'Email',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ), // or use Theme.of(context).textTheme.labelLarge,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -88,11 +90,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     filled: true,
                     fillColor: Colors.grey.shade100,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25), // 🔹 Radius here
+                      borderRadius: BorderRadius.circular(25),
                     ),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 10.0, // 🔹 Controls height
-                      horizontal: 12.0, // 🔹 Controls side padding
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10.0,
+                      horizontal: 12.0,
                     ),
                   ),
                   validator: LoginValidator.validateEmail,
@@ -100,28 +102,38 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
+                  child: const Text(
                     'Password',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ), // or use Theme.of(context).textTheme.labelLarge,
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                 ),
                 const SizedBox(height: 5),
                 TextFormField(
                   controller: passwordController,
-                  obscureText: true,
+                  obscureText: _obscurePassword, // 🔹 Use toggle
                   decoration: InputDecoration(
                     hintText: 'Enter your password',
                     filled: true,
                     fillColor: Colors.grey.shade100,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25), // 🔹 Radius here
+                      borderRadius: BorderRadius.circular(25),
                     ),
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 10.0, // 🔹 Controls height
-                      horizontal: 12.0, // 🔹 Controls side padding
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10.0,
+                      horizontal: 12.0,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
                   ),
                   validator: LoginValidator.validatePassword,
@@ -143,8 +155,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   child: isLoading
-                      ? Row(mainAxisAlignment: MainAxisAlignment.center ,children: [const CircularProgressIndicator(color: Colors.white), SizedBox(width: 15),const Text('Loading...', style: TextStyle(color: Colors.black45),)])
-                      : const Text('Login', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 3)),
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            CircularProgressIndicator(color: Colors.white),
+                            SizedBox(width: 15),
+                            Text(
+                              'Loading...',
+                              style: TextStyle(color: Colors.black45),
+                            ),
+                          ],
+                        )
+                      : const Text(
+                          'Login',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 3,
+                          ),
+                        ),
                 ),
                 Row(
                   children: [
@@ -154,7 +184,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Navigate to signup
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
                         );
                       },
                       child: const Text('Sign Up'),

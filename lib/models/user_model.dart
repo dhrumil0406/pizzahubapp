@@ -7,6 +7,7 @@ class User {
   final String phoneno;
   final String usertype;
   final DateTime updatedAt;
+  final String? password; // 🔹 add password (nullable)
 
   User({
     required this.userid,
@@ -17,6 +18,7 @@ class User {
     required this.phoneno,
     required this.usertype,
     required this.updatedAt,
+    this.password, // 🔹 optional
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -28,7 +30,10 @@ class User {
       email: json['email']?.toString() ?? '',
       phoneno: json['phoneno']?.toString() ?? '',
       usertype: json['usertype']?.toString() ?? '',
-      updatedAt: DateTime.tryParse(json['updated_at']?.toString() ?? '') ?? DateTime(1970, 1, 1),
+      updatedAt:
+          DateTime.tryParse(json['updated_at']?.toString() ?? '') ??
+          DateTime(1970, 1, 1),
+      password: json['password']?.toString(), // 🔹 handle if API returns it
     );
   }
 
@@ -42,6 +47,8 @@ class User {
       'phoneno': phoneno,
       'usertype': usertype,
       'updated_at': updatedAt.toIso8601String(),
+      if (password != null && password!.isNotEmpty)
+        'password': password, // 🔹 only send if provided
     };
   }
 }

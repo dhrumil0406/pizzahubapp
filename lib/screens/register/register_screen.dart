@@ -19,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController password = TextEditingController();
 
   bool isLoading = false;
+  bool _obscurePassword = true; // 👈 toggle state
 
   void _submit() async {
     if (_formKey.currentState!.validate()) {
@@ -35,9 +36,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       setState(() => isLoading = false);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
 
       if (message.toLowerCase().contains('success')) {
         Navigator.pop(context); // Go back to login or home
@@ -57,34 +58,121 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 Image.asset('assets/images/pizza_chef.png', width: 200),
                 Transform.translate(
-                  offset: Offset(0, -50),
+                  offset: const Offset(0, -50),
                   child: Column(
-                    children: [
-                      const Text(
+                    children: const [
+                      Text(
                         'Create Account',
-                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, fontFamily: 'Amerika'),
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Amerika',
+                        ),
                       ),
-                      const Text('Register with your credentials.')
+                      Text('Register with your credentials.'),
                     ],
                   ),
                 ),
-                _buildField(uname, 'Username', (v) => RegisterValidator.validateField(v, 'Username')),
-                _buildField(fname, 'First Name', (v) => RegisterValidator.validateField(v, 'First Name')),
-                _buildField(lname, 'Last Name', (v) => RegisterValidator.validateField(v, 'Last Name')),
+                _buildField(
+                  uname,
+                  'Username',
+                  (v) => RegisterValidator.validateField(v, 'Username'),
+                ),
+                _buildField(
+                  fname,
+                  'First Name',
+                  (v) => RegisterValidator.validateField(v, 'First Name'),
+                ),
+                _buildField(
+                  lname,
+                  'Last Name',
+                  (v) => RegisterValidator.validateField(v, 'Last Name'),
+                ),
                 _buildField(email, 'Email', RegisterValidator.validateEmail),
                 _buildField(phone, 'Phone', RegisterValidator.validatePhone),
-                _buildField(password, 'Password', RegisterValidator.validatePassword, obscure: true),
+
+                // 👇 password with show/hide toggle
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Password',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: password,
+                        obscureText: _obscurePassword,
+                        validator: RegisterValidator.validatePassword,
+                        decoration: InputDecoration(
+                          hintText: 'Enter Password',
+                          filled: true,
+                          fillColor: Colors.grey.shade100,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: isLoading ? null : _submit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
                     minimumSize: const Size.fromHeight(45),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
                   ),
                   child: isLoading
-                      ? Row( mainAxisAlignment: MainAxisAlignment.center, children: const [ CircularProgressIndicator(color: Colors.white),SizedBox(width: 12),Text('Loading...', style: TextStyle(color: Colors.white)),],)
-                      : const Text('Sign Up', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 3)),
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            CircularProgressIndicator(color: Colors.white),
+                            SizedBox(width: 12),
+                            Text(
+                              'Loading...',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        )
+                      : const Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 3,
+                          ),
+                        ),
                 ),
                 Row(
                   children: [
@@ -104,11 +192,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildField(
-      TextEditingController controller,
-      String label,
-      String? Function(String?) validator, {
-        bool obscure = false,
-      }) {
+    TextEditingController controller,
+    String label,
+    String? Function(String?) validator, {
+    bool obscure = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Column(
@@ -118,10 +206,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             alignment: Alignment.centerLeft,
             child: Text(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ), // or use Theme.of(context).textTheme.labelLarge,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
             ),
           ),
           const SizedBox(height: 6),
@@ -133,13 +218,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               hintText: 'Enter $label',
               filled: true,
               fillColor: Colors.grey.shade100,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(25)),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 12,
+                horizontal: 16,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
             ),
           ),
         ],
       ),
     );
   }
-
 }
