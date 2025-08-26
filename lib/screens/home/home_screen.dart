@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Grid settings based on device
     final crossAxisCount = isTablet ? 3 : 2;
     final childAspectRatio = isTablet ? 0.75 : 0.68;
-    final carouselHeight = isTablet ? 250.0 : 190.0;
+    final carouselHeight = isTablet ? 250.0 : 180.0;
 
     return Scaffold(
       appBar: AppBar(
