@@ -37,6 +37,7 @@ class _AddressScreenState extends State<AddressScreen> {
   Future<void> _removeAddress(int addressId) async {
     try {
       final res = await AddressService.removeAddress(addressId);
+      // print(addressId);
       if (res['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Address removed successfully")),
@@ -131,7 +132,7 @@ class _AddressScreenState extends State<AddressScreen> {
               final address = addresses[index];
               return AddressCard(
                 address: address,
-                onDelete: () => _removeAddress(int.parse(address['addressid'])),
+                onDelete: () => _removeAddress(address['addressid']),
               );
             },
           );

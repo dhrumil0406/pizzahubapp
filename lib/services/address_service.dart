@@ -62,6 +62,7 @@ class AddressService {
 
   // ✅ Remove Address
   static Future<Map<String, dynamic>> removeAddress(int addressid) async {
+    await Future.delayed(const Duration(milliseconds: 500));
     final body = json.encode({'addressid': addressid});
 
     final response = await http.post(

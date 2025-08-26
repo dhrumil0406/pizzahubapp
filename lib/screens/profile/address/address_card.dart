@@ -80,8 +80,8 @@ class AddressCard extends StatelessWidget {
             ),
             child: IconButton(
               padding: EdgeInsets.zero,
-              iconSize: 18,
-              icon: const Icon(Icons.close, color: Colors.orange),
+              iconSize: 22,
+              icon: const Icon(Icons.delete, color: Colors.orange),
               onPressed: onDelete,
             ),
           ),
