@@ -71,4 +71,28 @@ class CartService {
     final data = jsonDecode(response.body);
     return {'status': data['status'], 'message': data['message']};
   }
+
+  static Future<Map<String, dynamic>> placeOrder({
+    required String userId,
+    required int paymentId,
+    required String addressId,
+    required double totalPrice,
+    required double finalAmount,
+  }) async {
+    final url = Uri.parse('${baseUrl}place_order.php');
+
+    final response = await http.post(
+      url,
+      body: {
+        'userid': userId,
+        'paymentid': paymentId.toString(),
+        'addressid': addressId,
+        'totalprice': totalPrice.toStringAsFixed(2),
+        'finalamount': finalAmount.toStringAsFixed(2),
+      },
+    );
+
+    final data = jsonDecode(response.body);
+    return data; // {'status': 'success', 'message': '...', 'data': {...}}
+  }
 }

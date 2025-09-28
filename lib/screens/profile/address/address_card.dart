@@ -4,11 +4,7 @@ class AddressCard extends StatelessWidget {
   final Map<String, dynamic> address;
   final VoidCallback onDelete;
 
-  const AddressCard({
-    super.key,
-    required this.address,
-    required this.onDelete,
-  });
+  const AddressCard({super.key, required this.address, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +23,7 @@ class AddressCard extends StatelessWidget {
                 color: Colors.black12,
                 blurRadius: 8,
                 offset: Offset(2, 3),
-              )
+              ),
             ],
           ),
           child: Column(
@@ -50,10 +46,10 @@ class AddressCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       "${address["name"] ?? ""}, "
-                          "${address["apartmentNo"] ?? ""} "
-                          "${address["buildingName"] ?? ""}, "
-                          "${address["streetArea"] ?? ""}, "
-                          "${address["city"] ?? ""}",
+                      "${address["apartmentNo"] ?? ""} "
+                      "${address["buildingName"] ?? ""}, "
+                      "${address["streetArea"] ?? ""}, "
+                      "${address["city"] ?? ""}",
                       style: const TextStyle(
                         fontSize: 14,
                         color: Colors.black87,
