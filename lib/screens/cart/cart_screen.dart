@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizzahub/screens/profile/address/address_screen.dart';
 import '../../screens/order/orders_screen.dart';
 import '../../services/address_service.dart';
 import '../../models/category_model.dart';
@@ -236,10 +237,9 @@ class _CartScreenState extends State<CartScreen> {
                 title: const Text('Add new address'),
                 onTap: () {
                   Navigator.of(context).pop(null);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Add address flow (implement)'),
-                    ),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddressScreen()),
                   );
                 },
               ),
@@ -510,8 +510,8 @@ class _CartScreenState extends State<CartScreen> {
                   bottom: tablet
                       ? 120
                       : 100, // make room for fixed bottom button
-                  left: tablet ? 16 : 12,
-                  right: tablet ? 16 : 12,
+                  left: tablet ? 16 : 6,
+                  right: tablet ? 16 : 6,
                 ),
                 children: [
                   // NOTE: selection boxes removed from top (moved into cartSummary after Total)
@@ -551,16 +551,12 @@ class _CartScreenState extends State<CartScreen> {
                     finalTotal: finalTotal,
                     tablet: tablet,
                   ),
-
-                  SizedBox(height: tablet ? 18 : 16),
-                  // note: Place Order button moved to fixed bottomNavigationBar
-                  SizedBox(height: tablet ? 8 : 8),
                 ],
               ),
 
         // Fixed Place Order button at bottom
         bottomNavigationBar: SafeArea(
-          minimum: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          minimum: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: SizedBox(
             height: tablet ? 72 : 56,
             child: ElevatedButton(
@@ -614,7 +610,7 @@ class _CartScreenState extends State<CartScreen> {
         // Total summary card (unchanged)
         Container(
           padding: EdgeInsets.all(tablet ? 24 : 16),
-          margin: const EdgeInsets.only(left: 8, right: 8),
+          margin: const EdgeInsets.only(left: 16, right: 16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
@@ -632,7 +628,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ),
 
-        SizedBox(height: tablet ? 18 : 12),
+        SizedBox(height: tablet ? 18 : 20),
 
         // Selection boxes OUTSIDE total box
         _selectionCard(
@@ -643,7 +639,7 @@ class _CartScreenState extends State<CartScreen> {
           tablet: tablet,
         ),
 
-        SizedBox(height: tablet ? 14 : 10),
+        SizedBox(height: tablet ? 18 : 20),
 
         _selectionCard(
           leading: Icons.payment,

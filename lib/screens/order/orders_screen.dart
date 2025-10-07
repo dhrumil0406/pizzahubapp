@@ -1,20 +1,59 @@
 import 'package:flutter/material.dart';
-import '../../screens/home/home_screen.dart';
+import '../home/home_screen.dart';
+import '../../services/order_service.dart';
+import '../../utils/user_preferences.dart';
+import '../../models/orders_model.dart';
+import 'order_card.dart';
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
+
+  @override
+  State<OrdersScreen> createState() => _OrdersScreenState();
+}
+
+class _OrdersScreenState extends State<OrdersScreen> {
+  late Future<List<Order>> _ordersFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Set a default future first
+    _ordersFuture = Future.value([]);
+    _loadOrders();
+  }
+
+  void _loadOrders() async {
+    final userIdStr = await UserPreferences.getUserId();
+    final userId = int.tryParse(userIdStr ?? "0") ?? 0;
+
+    if (userId == 0) {
+      // Handle case if userId is not set
+      setState(() {
+        _ordersFuture = Future.error("User not logged in");
+      });
+      return;
+    }
+
+    setState(() {
+      _ordersFuture = OrderService.fetchOrders(userId);
+    });
+  }
+
+  void _navigateToHome() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+          (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Navigate to home and prevent app from closing
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (route) => false,
-        );
-        return false; // block default back button
+        _navigateToHome();
+        return false;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -33,13 +72,7 @@ class OrdersScreen extends StatelessWidget {
                 color: Colors.orange,
                 size: 24,
               ),
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  (route) => false,
-                );
-              },
+              onPressed: _navigateToHome,
             ),
           ),
           title: const Text(
@@ -67,11 +100,46 @@ class OrdersScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: const Center(
-          child: Text(
-            "Orders Screen",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-          ),
+        body: FutureBuilder<List<Order>>(
+          future: _ordersFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  "Error: ${snapshot.error}",
+                  style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(
+                child: Text(
+                  "No orders found.",
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              );
+            } else {
+              final orders = snapshot.data!;
+              return ListView.separated(
+                padding: const EdgeInsets.all(6),
+                itemCount: orders.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 4),
+                itemBuilder: (context, index) {
+                  final order = orders[index];
+                  return OrderCard(
+                    orderId: order.orderid,
+                    phone: order.phoneno,
+                    address: order.address,
+                    orderDate: order.orderdate.toString(),
+                    paymentMethod: order.paymentmethod.toString(),
+                    amount: "₹${order.discountedtotalprice}",
+                  );
+                },
+              );
+            }
+          },
         ),
       ),
     );
