@@ -22,7 +22,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
   }
 
   Future<void> _downloadInvoice() async {
-    final url = Uri.parse("http://10.71.110.98:8080/order-download/${widget.orderId}");
+    final url = Uri.parse("http://10.92.163.157:8080/order-download/${widget.orderId}");
 
     try {
       await launchUrl(

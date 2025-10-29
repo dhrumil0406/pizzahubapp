@@ -21,7 +21,7 @@ class OrderCard extends StatelessWidget {
   });
 
   Future<void> _downloadInvoice(String orderId, BuildContext context) async {
-    final url = Uri.parse("http://10.71.110.98:8080/order-download/$orderId");
+    final url = Uri.parse("http://10.92.163.157:8080/order-download/$orderId");
 
     try {
       await launchUrl(
