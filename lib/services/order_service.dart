@@ -7,6 +7,7 @@ import '../utils/api.dart'; // <-- baseUrl is here
 class OrderService {
   static const String fetchOrderUrl = "${baseUrl}fetchOrders.php";
   static const String fetchOrderItemsUrl = "${baseUrl}fetchOrderItems.php";
+  static const String fetchDeliveryDetailsUrl = "${baseUrl}fetchDeliveryDetails.php";
 
   // Fetch orders for a user
   static Future<List<Order>> fetchOrders(int userId) async {
@@ -48,6 +49,24 @@ class OrderService {
       }
     } else {
       throw Exception("Failed to fetch order items");
+    }
+  }
+
+  static Future<Map<String, dynamic>> fetchDeliveryDetails(String orderId) async {
+    final response = await http.get(
+      Uri.parse("$fetchDeliveryDetailsUrl?orderid=$orderId"),
+    );
+
+    if (response.statusCode == 200) {
+      final body = json.decode(response.body);
+
+      if (body['status'] == 'success' && body['data'] is List && body['data'].isNotEmpty) {
+        return body['data'][0]; // Return the first record
+      } else {
+        throw Exception("No delivery details found.");
+      }
+    } else {
+      throw Exception("Failed to fetch delivery details");
     }
   }
 }

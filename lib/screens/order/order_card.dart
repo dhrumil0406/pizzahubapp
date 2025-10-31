@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'order_items_screen.dart'; // ✅ Import new screen
+import 'order_items_screen.dart';
+import 'order_status_screen.dart'; // ✅ Import new screen
 
 class OrderCard extends StatelessWidget {
   final String orderId;
@@ -21,7 +22,7 @@ class OrderCard extends StatelessWidget {
   });
 
   Future<void> _downloadInvoice(String orderId, BuildContext context) async {
-    final url = Uri.parse("http://10.92.163.157:8080/order-download/$orderId");
+    final url = Uri.parse("http://10.197.139.157:8080/order-download/$orderId");
 
     try {
       await launchUrl(
@@ -171,35 +172,67 @@ class OrderCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // 💰 Amount styled like CartItemCard
-            Align(
-              alignment: Alignment.centerRight,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: const BoxDecoration(
-                  color: Colors.orange,
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(25),
-                    topRight: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 4,
-                      offset: Offset(2, 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // 🟠 Order Status Button
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    elevation: 3,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      side: const BorderSide(color: Colors.orange, width: 1.5),
                     ),
-                  ],
-                ),
-                child: Text(
-                  amount,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => OrderStatusScreen(orderId: orderId),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.local_shipping, color: Colors.orange, size: 20),
+                  label: const Text(
+                    "Order Status",
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
-              ),
+
+                // 💰 Price Container
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: const BoxDecoration(
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(25),
+                      topRight: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(2, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    amount,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

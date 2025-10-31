@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../utils/user_preferences.dart';
 import '../login/login_screen.dart';
 import '../home/home_screen.dart';
@@ -33,12 +34,35 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    _navigateAfterSplash();
+    _initializeApp();
   }
 
-  Future<void> _navigateAfterSplash() async {
-    await Future.delayed(const Duration(seconds: 3));
+  // 🟠 Step 1: Initialize app setup
+  Future<void> _initializeApp() async {
+    await _checkPermissions();
+    await Future.delayed(const Duration(seconds: 2)); // show splash for 2s
+    await _navigateAfterSplash();
+  }
 
+  // 🟢 Step 2: Check permissions
+  Future<void> _checkPermissions() async {
+    // Request all required permissions together
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.locationWhenInUse,
+      Permission.storage,
+      Permission.notification,
+    ].request();
+
+    // Optional: Handle denied permissions
+    statuses.forEach((permission, status) {
+      if (status.isDenied || status.isPermanentlyDenied) {
+        debugPrint('$permission was denied.');
+      }
+    });
+  }
+
+  // 🔵 Step 3: Navigate after permissions check
+  Future<void> _navigateAfterSplash() async {
     String? userId = await UserPreferences.getUserId();
 
     if (!mounted) return;
@@ -71,15 +95,10 @@ class _SplashScreenState extends State<SplashScreen>
           opacity: _fadeAnimation,
           child: ScaleTransition(
             scale: _scaleAnimation,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(
-                  'assets/icons/pizzaHubLogo2.png',
-                  width: 280,
-                  height: 280,
-                ),
-              ],
+            child: Image.asset(
+              'assets/icons/pizzaHubLogo2.png',
+              width: 280,
+              height: 280,
             ),
           ),
         ),

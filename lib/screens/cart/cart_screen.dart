@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pizzahub/screens/profile/address/address_screen.dart';
+import '../../screens/profile/address/address_screen.dart';
 import '../../screens/order/orders_screen.dart';
 import '../../services/address_service.dart';
 import '../../models/category_model.dart';
