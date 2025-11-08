@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../utils/user_preferences.dart';
-import '../login/login_screen.dart';
-import '../home/home_screen.dart';
+import 'location_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -63,21 +61,11 @@ class _SplashScreenState extends State<SplashScreen>
 
   // 🔵 Step 3: Navigate after permissions check
   Future<void> _navigateAfterSplash() async {
-    String? userId = await UserPreferences.getUserId();
-
     if (!mounted) return;
-
-    if (userId != null && userId.isNotEmpty) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LocationScreen()),
+    );
   }
 
   @override
