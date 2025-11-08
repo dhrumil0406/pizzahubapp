@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../services/order_service.dart'; // ✅ Import OrderService
+import '../../services/order_service.dart';
+import '../../utils/location_prefrences.dart'; // ✅ Import OrderService
 
 class OrderStatusScreen extends StatefulWidget {
   final String orderId;
@@ -38,31 +39,29 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
   }
 
   Future<void> _openLiveLocation() async {
-    // 👇 Use a complete Google Maps query URL (this works universally)
-    final Uri url = Uri.parse(
-      "https://www.google.com/maps/search/?api=1&query=21.1702,72.8311",
-    ); // replace with your dynamic lat/lng if needed
+    // 🟢 Get user's saved location (from SharedPreferences)
+    final double? userLat = await LocationPreferences.getLatitude();
+    final double? userLng = await LocationPreferences.getLongitude();
+
+    // 🟡 Delivery Boy Address to default (store location)
+    final double startLat = LocationPreferences.getDefaultLatitude(); // Store
+    final double startLng = LocationPreferences.getDefaultLongitude(); // Store
 
     try {
-      // Try launching via the default browser (Chrome usually)
-      await launchUrl(
-        url,
-        mode: LaunchMode.platformDefault, // ✅ Chrome or system browser
+      final Uri url = Uri.parse(
+        "https://www.google.com/maps/dir/?api=1&origin=$startLat,$startLng&destination=$userLat,$userLng&travelmode=two_wheeler",
       );
+      await launchUrl(url, mode: LaunchMode.platformDefault);
     } catch (e) {
       debugPrint("Primary launch failed: $e");
 
-      // ✅ Fallback using an explicit intent (Android only)
       const String chromePackage = "com.android.chrome";
       final Uri intentUri = Uri.parse(
-        "intent://www.google.com/maps/search/?api=1&query=21.1702,72.8311#Intent;scheme=https;package=$chromePackage;end",
+        "intent://www.google.com/maps/dir/?api=1&origin=$startLat,$startLng&destination=$userLat,$userLng&travelmode=two_wheeler#Intent;scheme=https;package=$chromePackage;end",
       );
 
       try {
-        await launchUrl(
-          intentUri,
-          mode: LaunchMode.externalApplication,
-        );
+        await launchUrl(intentUri, mode: LaunchMode.externalApplication);
       } catch (e) {
         debugPrint("Fallback intent failed: $e");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -71,8 +70,6 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
       }
     }
   }
-
-
 
   Widget _buildStatusStep(int stepNumber, String title) {
     final int status = deliveryData?['orderstatus'] ?? 0;
@@ -83,24 +80,16 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
         children: [
           Row(
             children: [
-              Expanded(
-                child: Container(
-                  height: 3,
-                  color: Colors.black,
-                ),
-              ),
+              Expanded(child: Container(height: 3, color: Colors.black)),
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: const BoxDecoration(
-                    color: Colors.black, shape: BoxShape.circle),
+                  color: Colors.black,
+                  shape: BoxShape.circle,
+                ),
                 child: const Icon(Icons.close, color: Colors.white, size: 22),
               ),
-              Expanded(
-                child: Container(
-                  height: 3,
-                  color: Colors.black,
-                ),
-              ),
+              Expanded(child: Container(height: 3, color: Colors.black)),
             ],
           ),
           const SizedBox(height: 8),
@@ -108,11 +97,12 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
             child: Text(
               "Order Denied",
               style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold),
+                fontSize: 18,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          )
+          ),
         ],
       );
     }
@@ -150,7 +140,9 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: isCompleted || isActive ? Colors.orange : Colors.grey[300],
+                color: isCompleted || isActive
+                    ? Colors.orange
+                    : Colors.grey[300],
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -160,11 +152,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
               ),
             ),
             if (stepNumber != 5)
-              Container(
-                width: 3,
-                height: 50,
-                color: Colors.grey[300],
-              ),
+              Container(width: 3, height: 50, color: Colors.grey[300]),
           ],
         ),
         const SizedBox(width: 14),
@@ -185,7 +173,6 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -201,8 +188,11 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
             boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
           ),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_outlined,
-                color: Colors.orange, size: 24),
+            icon: const Icon(
+              Icons.arrow_back_ios_new_outlined,
+              color: Colors.orange,
+              size: 24,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -223,116 +213,141 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
           ? const Center(child: CircularProgressIndicator(color: Colors.orange))
           : errorMessage != null
           ? Center(
-        child: Text(
-          errorMessage!,
-          style: const TextStyle(color: Colors.red),
-        ),
-      )
+              child: Text(
+                errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            )
           : Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 🔹 Order Info Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 6,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                ),
+              padding: const EdgeInsets.all(20),
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Order ID : ${widget.orderId}",
-                        style: const TextStyle(
+                    // 🔹 Order Info Card
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: Offset(2, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Order ID : ${widget.orderId}",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Tracking ID : ${deliveryData?['trackid'] ?? '-'}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          Text(
+                            "Delivery Boy : ${deliveryData?['deliveryboyname'] ?? '-'}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          Text(
+                            "Contact : ${deliveryData?['deliveryboyphoneno'] ?? '-'}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          Text(
+                            "Estimated Delivery Time : ⏱ ${deliveryData?['deliverytime'] ?? '-'}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          Text(
+                            "Delivery Date : ${deliveryData?['deliverydate'] ?? '-'}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // 🔹 Vertical Order Status
+                    if (deliveryData?['orderstatus'] == 6)
+                      _buildStatusStep(6, "Order Denied")
+                    else ...[
+                      _buildStatusStep(1, "Order Pending"),
+                      _buildStatusStep(2, "Order Confirmed"),
+                      _buildStatusStep(3, "Preparing your Order"),
+                      _buildStatusStep(4, "On the Way"),
+                      _buildStatusStep(5, "Order Delivered"),
+                    ],
+
+                    const SizedBox(height: 40),
+
+                    // 🔹 Live Location Button
+                    // 🔹 Live Location Button
+                    Center(
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              (deliveryData?['orderstatus'] == 5 ||
+                                  deliveryData?['orderstatus'] == 6)
+                              ? Colors
+                                    .grey // disabled color
+                              : Colors.orange, // enabled color
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 28,
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 6,
+                        ),
+                        onPressed:
+                            (deliveryData?['orderstatus'] == 5 ||
+                                deliveryData?['orderstatus'] == 6)
+                            ? null // disables the button
+                            : _openLiveLocation,
+                        icon: const Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        label: const Text(
+                          "Check Live Location",
+                          style: TextStyle(
+                            color: Colors.white,
                             fontSize: 18,
-                            fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Tracking ID : ${deliveryData?['trackid'] ?? '-'}",
-                      style: const TextStyle(
-                          fontSize: 16, color: Colors.black87),
-                    ),
-                    Text(
-                      "Delivery Boy : ${deliveryData?['deliveryboyname'] ?? '-'}",
-                      style: const TextStyle(
-                          fontSize: 16, color: Colors.black87),
-                    ),
-                    Text(
-                      "Contact : ${deliveryData?['deliveryboyphoneno'] ?? '-'}",
-                      style: const TextStyle(
-                          fontSize: 16, color: Colors.black87),
-                    ),
-                    Text(
-                      "Estimated Delivery Time : ⏱ ${deliveryData?['deliverytime'] ?? '-'}",
-                      style: const TextStyle(
-                          fontSize: 16, color: Colors.black87),
-                    ),
-                    Text(
-                      "Delivery Date : ${deliveryData?['deliverydate'] ?? '-'}",
-                      style: const TextStyle(
-                          fontSize: 16, color: Colors.black87),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-
-              const SizedBox(height: 30),
-
-              // 🔹 Vertical Order Status
-              if (deliveryData?['orderstatus'] == 6)
-                _buildStatusStep(6, "Order Denied")
-              else ...[
-                _buildStatusStep(1, "Order Pending"),
-                _buildStatusStep(2, "Order Confirmed"),
-                _buildStatusStep(3, "Preparing your Order"),
-                _buildStatusStep(4, "On the Way"),
-                _buildStatusStep(5, "Order Delivered"),
-              ],
-
-              const SizedBox(height: 40),
-
-              // 🔹 Live Location Button
-              // 🔹 Live Location Button
-              Center(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: (deliveryData?['orderstatus'] == 5 || deliveryData?['orderstatus'] == 6)
-                        ? Colors.grey // disabled color
-                        : Colors.orange, // enabled color
-                    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    elevation: 6,
-                  ),
-                  onPressed: (deliveryData?['orderstatus'] == 5 || deliveryData?['orderstatus'] == 6)
-                      ? null // disables the button
-                      : _openLiveLocation,
-                  icon: const Icon(Icons.location_on, color: Colors.white, size: 24),
-                  label: const Text(
-                    "Check Live Location",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
