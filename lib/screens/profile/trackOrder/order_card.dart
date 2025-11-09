@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../utils/api.dart';
 
 class OrderCard extends StatelessWidget {
   final String orderId;
@@ -20,7 +21,7 @@ class OrderCard extends StatelessWidget {
   });
 
   Future<void> _downloadInvoice(String orderId, BuildContext context) async {
-    final url = Uri.parse("http://10.107.214.98:8080/order-download/$orderId");
+    final url = Uri.parse("$baseUrl2/order-download/$orderId");
     try {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } catch (e) {

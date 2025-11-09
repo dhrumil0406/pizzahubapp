@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../utils/api.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../services/order_service.dart'; // 🔹 You will create fetchOrderItems here
-import '../../models/order_items_model.dart'; // 🔹 Model for order items
+import '../../services/order_service.dart';
+import '../../models/order_items_model.dart';
 
 class OrderItemsScreen extends StatefulWidget {
   final String orderId;
@@ -22,7 +23,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
   }
 
   Future<void> _downloadInvoice() async {
-    final url = Uri.parse("http://10.197.139.157:8080/order-download/${widget.orderId}");
+    final url = Uri.parse("$baseUrl2/order-download/${widget.orderId}");
 
     try {
       await launchUrl(
@@ -30,9 +31,9 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
         mode: LaunchMode.inAppWebView, // Always open in browser
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error invoice launching: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error invoice launching: $e")));
     }
   }
 
@@ -94,7 +95,11 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                     ),
                   ),
                   onPressed: _downloadInvoice,
-                  icon: const Icon(Icons.file_download, color: Colors.white, size: 20),
+                  icon: const Icon(
+                    Icons.file_download,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                   label: const Text(
                     "Invoice",
                     style: TextStyle(color: Colors.white, fontSize: 16),
@@ -115,8 +120,10 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(
-                    child: Text("Error: ${snapshot.error}",
-                        style: const TextStyle(color: Colors.red)),
+                    child: Text(
+                      "Error: ${snapshot.error}",
+                      style: const TextStyle(color: Colors.red),
+                    ),
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
@@ -136,7 +143,10 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                       if (item.iscombo == 1) {
                         // check if this combo already shown
                         final isFirstCombo =
-                            items.indexWhere((i) => i.iscombo == 1 && i.catid == item.catid) == index;
+                            items.indexWhere(
+                              (i) => i.iscombo == 1 && i.catid == item.catid,
+                            ) ==
+                            index;
 
                         // only render card for the first occurrence
                         if (isFirstCombo) {
@@ -166,11 +176,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(2, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(2, 2)),
         ],
       ),
       child: Padding(
@@ -191,19 +197,28 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.pizzaname,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.black87)),
+                  Text(
+                    item.pizzaname,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black87,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text("Price: ₹${item.pizzaprice}",
-                      style: const TextStyle(fontSize: 14, color: Colors.black87)),
-                  Text("Discounted: ₹${item.discountedPrice}",
-                      style: const TextStyle(fontSize: 14, color: Colors.green)),
+                  Text(
+                    "Price: ₹${item.pizzaprice}",
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
+                  Text(
+                    "Discounted: ₹${item.discountedPrice}",
+                    style: const TextStyle(fontSize: 14, color: Colors.green),
+                  ),
                   const SizedBox(height: 6),
-                  Text("Qty: ${item.quantity}",
-                      style: const TextStyle(fontSize: 14, color: Colors.black87)),
+                  Text(
+                    "Qty: ${item.quantity}",
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
                 ],
               ),
             ),
@@ -215,8 +230,9 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
 
   // 🔹 Combo Card (groups pizzas under same combo)
   Widget _buildComboCard(OrderItem combo, List<OrderItem> allItems) {
-    final comboPizzas =
-    allItems.where((i) => i.iscombo == 1 && i.catid == combo.catid).toList();
+    final comboPizzas = allItems
+        .where((i) => i.iscombo == 1 && i.catid == combo.catid)
+        .toList();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -224,11 +240,7 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6,
-            offset: Offset(2, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(2, 2)),
         ],
       ),
       child: Padding(
@@ -252,30 +264,52 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(combo.catname ?? "Combo",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.black87)),
+                      Text(
+                        combo.catname ?? "Combo",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.black87,
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Text("Combo Price: ₹${combo.comboprice}",
-                          style: const TextStyle(fontSize: 14, color: Colors.black87)),
-                      Text("Discounted: ₹${combo.discountedPrice}",
-                          style: const TextStyle(fontSize: 14, color: Colors.green)),
+                      Text(
+                        "Combo Price: ₹${combo.comboprice}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      Text(
+                        "Discounted: ₹${combo.discountedPrice}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.green,
+                        ),
+                      ),
                       const SizedBox(height: 6),
-                      Text("Qty: ${combo.quantity}",
-                          style: const TextStyle(fontSize: 14, color: Colors.black87)),
+                      Text(
+                        "Qty: ${combo.quantity}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
             const Divider(thickness: 1, color: Colors.black26),
-            ...comboPizzas.map((pizza) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Text("🍕 ${pizza.pizzaname}",
-                  style: const TextStyle(fontSize: 14, color: Colors.black87)),
-            )),
+            ...comboPizzas.map(
+              (pizza) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text(
+                  "🍕 ${pizza.pizzaname}",
+                  style: const TextStyle(fontSize: 14, color: Colors.black87),
+                ),
+              ),
+            ),
           ],
         ),
       ),

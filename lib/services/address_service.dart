@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../utils/api.dart';
+import '../utils/location_prefrences.dart';
 
 class AddressService {
   static const String addUrl = '${baseUrl}addAddress.php';
   static const String fetchUrl = '${baseUrl}fetchAddress.php';
   static const String removeUrl = '${baseUrl}removeAddress.php';
+  static const String fetchUrl2 = '${baseUrl}fetchAddressById.php';
 
   // ✅ Add Address
   static Future<Map<String, dynamic>> addAddress({
@@ -19,6 +21,14 @@ class AddressService {
   }) async {
     await Future.delayed(const Duration(seconds: 2));
 
+    // 🟢 Fetch latitude and longitude from SharedPreferences
+    final double? latitude = await LocationPreferences.getLatitude();
+    final double? longitude = await LocationPreferences.getLongitude();
+
+    // 🟡 Use default coordinates if not found
+    final double lat = latitude ?? LocationPreferences.getDefaultLatitude();
+    final double lng = longitude ?? LocationPreferences.getDefaultLongitude();
+
     final body = json.encode({
       'userid': userid,
       'addressType': addressType,
@@ -27,6 +37,8 @@ class AddressService {
       'buildingName': buildingName,
       'streetArea': streetArea,
       'city': city,
+      'latitude': lat,
+      'longitude': lng,
     });
 
     final response = await http.post(
@@ -42,11 +54,9 @@ class AddressService {
     }
   }
 
-  // ✅ Fetch Address
+  // ✅ Fetch Addresses by User ID
   static Future<List<Map<String, dynamic>>> fetchAddresses(int userid) async {
-    final response = await http.get(
-      Uri.parse("$fetchUrl?userid=$userid"),
-    );
+    final response = await http.get(Uri.parse("$fetchUrl?userid=$userid"));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -75,6 +85,23 @@ class AddressService {
       return json.decode(response.body);
     } else {
       throw Exception("Failed to remove address: ${response.statusCode}");
+    }
+  }
+
+  // ✅ Fetch Address by Order ID (🆕)
+  static Future<Map<String, dynamic>?> fetchAddressByOrderId(String orderId) async {
+    final response = await http.get(Uri.parse("$fetchUrl2?orderid=$orderId"));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      if (data['status'] == 'success' && data['data'] != null) {
+        return Map<String, dynamic>.from(data['data']);
+      } else {
+        return null; // No address found
+      }
+    } else {
+      throw Exception("Failed to fetch address by order ID: ${response.statusCode}");
     }
   }
 }

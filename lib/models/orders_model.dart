@@ -5,7 +5,6 @@ class Order {
   final String email;
   final int addressId;
   final String address;
-  final String zip;
   final String phoneno;
   final double totalfinalprice;
   final double discountedtotalprice;
@@ -21,7 +20,6 @@ class Order {
     required this.email,
     required this.addressId,
     required this.address,
-    required this.zip,
     required this.phoneno,
     required this.totalfinalprice,
     required this.discountedtotalprice,
@@ -39,7 +37,6 @@ class Order {
       email: json['email']?.toString() ?? '',
       addressId: int.tryParse(json['addressid']?.toString() ?? '0') ?? 0,
       address: json['address']?.toString() ?? '',
-      zip: json['zip']?.toString() ?? '',
       phoneno: json['phoneno']?.toString() ?? '',
       totalfinalprice: double.tryParse(json['totalfinalprice']?.toString() ?? '') ?? 0.0,
       discountedtotalprice: double.tryParse(json['discountedtotalprice']?.toString() ?? '') ?? 0.0,
@@ -58,7 +55,6 @@ class Order {
       'email': email,
       'addressid': addressId,
       'address': address,
-      'zip': zip,
       'phoneno': phoneno,
       'totalfinalprice': totalfinalprice,
       'discountedtotalprice': discountedtotalprice,

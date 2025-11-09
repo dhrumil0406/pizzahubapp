@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../utils/api.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'order_items_screen.dart';
-import 'order_status_screen.dart'; // ✅ Import new screen
+import 'order_status_screen.dart';
 
 class OrderCard extends StatelessWidget {
   final String orderId;
@@ -22,7 +23,7 @@ class OrderCard extends StatelessWidget {
   });
 
   Future<void> _downloadInvoice(String orderId, BuildContext context) async {
-    final url = Uri.parse("http://10.197.139.157:8080/order-download/$orderId");
+    final url = Uri.parse("$baseUrl2/order-download/$orderId");
 
     try {
       await launchUrl(
@@ -30,21 +31,20 @@ class OrderCard extends StatelessWidget {
         mode: LaunchMode.externalApplication, // Always open in browser
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error invoice launching: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error invoice launching: $e")));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(   // ✅ Make card clickable
+    return InkWell(
+      // ✅ Make card clickable
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => OrderItemsScreen(orderId: orderId),
-          ),
+          MaterialPageRoute(builder: (_) => OrderItemsScreen(orderId: orderId)),
         );
       },
       child: Container(
@@ -127,10 +127,7 @@ class OrderCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     address,
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14,
-                    ),
+                    style: const TextStyle(color: Colors.black54, fontSize: 14),
                   ),
                 ),
               ],
@@ -141,14 +138,15 @@ class OrderCard extends StatelessWidget {
             // 📅 Order Date
             Row(
               children: [
-                const Icon(Icons.calendar_today, size: 20, color: Colors.orange),
+                const Icon(
+                  Icons.calendar_today,
+                  size: 20,
+                  color: Colors.orange,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   "Order On: $orderDate",
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(color: Colors.black54, fontSize: 14),
                 ),
               ],
             ),
@@ -161,11 +159,12 @@ class OrderCard extends StatelessWidget {
                 const Icon(Icons.payment, size: 20, color: Colors.orange),
                 const SizedBox(width: 6),
                 Text(
-                  'Payment: ${paymentMethod == "1" ? "Cash On Delivery" : paymentMethod == "2" ? "Card" : "UPI"}',
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontSize: 14,
-                  ),
+                  'Payment: ${paymentMethod == "1"
+                      ? "Cash On Delivery"
+                      : paymentMethod == "2"
+                      ? "Card"
+                      : "UPI"}',
+                  style: const TextStyle(color: Colors.black54, fontSize: 14),
                 ),
               ],
             ),
@@ -180,7 +179,10 @@ class OrderCard extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     elevation: 3,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                       side: const BorderSide(color: Colors.orange, width: 1.5),
@@ -194,7 +196,11 @@ class OrderCard extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.local_shipping, color: Colors.orange, size: 20),
+                  icon: const Icon(
+                    Icons.local_shipping,
+                    color: Colors.orange,
+                    size: 20,
+                  ),
                   label: const Text(
                     "Order Status",
                     style: TextStyle(
@@ -207,7 +213,10 @@ class OrderCard extends StatelessWidget {
 
                 // 💰 Price Container
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: const BoxDecoration(
                     color: Colors.orange,
                     borderRadius: BorderRadius.only(

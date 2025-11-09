@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../services/address_service.dart';
 import '../../../services/order_service.dart';
 import '../../../utils/location_prefrences.dart';
 
@@ -39,23 +40,44 @@ class _OrderStatusCardState extends State<OrderStatusCard> {
   }
 
   Future<void> _openLiveLocation() async {
-    final double? userLat = await LocationPreferences.getLatitude();
-    final double? userLng = await LocationPreferences.getLongitude();
-
-    final double startLat = LocationPreferences.getDefaultLatitude();
-    final double startLng = LocationPreferences.getDefaultLongitude();
-
     try {
+      // 🟢 Fetch address details by orderId (includes latitude & longitude)
+      final addressData = await AddressService.fetchAddressByOrderId(
+        widget.orderId,
+      );
+
+      if (addressData == null ||
+          addressData['latitude'] == null ||
+          addressData['longitude'] == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Unable to fetch delivery location")),
+        );
+        return;
+      }
+
+      // 🟣 User's delivery address (destination)
+      final double userLat =
+          double.tryParse(addressData['latitude'].toString()) ?? 0.0;
+      final double userLng =
+          double.tryParse(addressData['longitude'].toString()) ?? 0.0;
+
+      // 🟡 Store location (origin)
+      final double startLat = LocationPreferences.getDefaultLatitude();
+      final double startLng = LocationPreferences.getDefaultLongitude();
+
+      // 🗺️ Build Google Maps URL
       final Uri url = Uri.parse(
         "https://www.google.com/maps/dir/?api=1&origin=$startLat,$startLng&destination=$userLat,$userLng&travelmode=two_wheeler",
       );
+
+      // 🟠 Try to open Google Maps
       await launchUrl(url, mode: LaunchMode.platformDefault);
     } catch (e) {
       debugPrint("Primary launch failed: $e");
 
       const String chromePackage = "com.android.chrome";
       final Uri intentUri = Uri.parse(
-        "intent://www.google.com/maps/dir/?api=1&origin=$startLat,$startLng&destination=$userLat,$userLng&travelmode=two_wheeler#Intent;scheme=https;package=$chromePackage;end",
+        "intent://www.google.com/maps/dir/?api=1#Intent;scheme=https;package=$chromePackage;end",
       );
 
       try {
