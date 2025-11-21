@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:pizzahub/utils/api.dart';
 import '../../services/user_service.dart';
 import '../../utils/user_preferences.dart'; // 🔹 for stored userId
 
@@ -176,8 +177,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 60,
-                        backgroundImage: const AssetImage(
-                          "assets/images/profilePic.jpg",
+                        backgroundImage: const NetworkImage(
+                          "$baseUrl/images/profilePic.jpg",
                         ),
                         backgroundColor: Colors.grey.shade200,
                       ),

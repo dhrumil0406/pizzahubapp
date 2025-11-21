@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizzahub/utils/api.dart';
 import '../../models/pizza_model.dart';
 import '../../models/category_model.dart';
 import '../../services/cart_service.dart';
@@ -117,8 +118,8 @@ class PizzaScreen extends StatelessWidget {
                         clipBehavior: Clip.none,
                         children: [
                           ClipOval(
-                            child: Image.asset(
-                              'assets/pizzaimages/${pizza.pizzaimage}',
+                            child: Image.network(
+                              '$baseUrl/pizzaimages/${pizza.pizzaimage}',
                               fit: BoxFit.cover,
                               width: 150,
                               height: 150,
@@ -133,10 +134,10 @@ class PizzaScreen extends StatelessWidget {
                               height: 30,
                               width: 30,
                               padding: const EdgeInsets.all(2),
-                              child: Image.asset(
+                              child: Image.network(
                                 category.cattype == 1
-                                    ? 'assets/icons/veg-mark.jpg'
-                                    : 'assets/icons/non-veg-mark.jpg',
+                                    ? '$baseUrl/icons/veg-mark.jpg'
+                                    : '$baseUrl/icons/non-veg-mark.jpg',
                                 fit: BoxFit.cover,
                               ),
                             ),

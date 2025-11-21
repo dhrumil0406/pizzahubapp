@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:pizzahub/utils/api.dart';
 import 'filter_button.dart';
 import 'category_card.dart';
 import '../../widgets/bottom_nav_bar.dart';
@@ -107,16 +108,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   CarouselSlider(
                     items:
                         [
-                          'assets/images/b4.png',
-                          'assets/images/b1.png',
-                          'assets/images/b2.png',
+                          '$baseUrl/images/b4.png',
+                          '$baseUrl/images/b1.png',
+                          '$baseUrl/images/b2.png',
                         ].map((imagePath) {
                           return Container(
                             margin: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                               image: DecorationImage(
-                                image: AssetImage(imagePath),
+                                image: NetworkImage(imagePath),
                                 fit: BoxFit.cover,
                               ),
                             ),

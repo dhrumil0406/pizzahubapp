@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:pizzahub/utils/api.dart';
 import 'login_validator.dart';
 import '../../services/auth_service.dart';
 import '../register/register_screen.dart';
@@ -56,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
             key: _formKey,
             child: Column(
               children: [
-                Image.asset('assets/images/pizza_chef.png', width: 200),
+                Image.network('$baseUrl/images/pizza_chef.png', width: 200),
                 const SizedBox(height: 0),
                 Transform.translate(
                   offset: const Offset(0, -50),

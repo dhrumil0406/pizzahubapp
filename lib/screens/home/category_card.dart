@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizzahub/utils/api.dart';
 import '../../models/category_model.dart';
 import '../../services/cart_service.dart';
 import '../pizza_list/pizza_list.dart';
@@ -64,8 +65,8 @@ class PizzaCard extends StatelessWidget {
                   ],
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: Image.asset(
-                  'assets/catimages/${category.catimage}',
+                child: Image.network(
+                  '$baseUrl/catimages/${category.catimage}',
                   fit: BoxFit.cover,
                 ),
               ),

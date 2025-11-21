@@ -185,8 +185,8 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                "assets/pizzaimages/${item.pizzaimage}",
+              child: Image.network(
+                "$baseUrl/pizzaimages/${item.pizzaimage}",
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
@@ -252,8 +252,8 @@ class _OrderItemsScreenState extends State<OrderItemsScreen> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    "assets/catimages/${combo.catimage}",
+                  child: Image.network(
+                    "$baseUrl/catimages/${combo.catimage}",
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,

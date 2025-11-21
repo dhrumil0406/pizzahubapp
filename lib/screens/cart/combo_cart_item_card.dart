@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizzahub/utils/api.dart';
 import '../../models/category_model.dart';
 
 class ComboCartItemCard extends StatelessWidget {
@@ -39,8 +40,8 @@ class ComboCartItemCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  'assets/catimages/${category.catimage}',
+                child: Image.network(
+                  '$baseUrl/catimages/${category.catimage}',
                   width: 65,
                   height: 65,
                   fit: BoxFit.cover,

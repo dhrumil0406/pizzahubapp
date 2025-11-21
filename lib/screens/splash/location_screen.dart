@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:pizzahub/utils/api.dart';
 import '../../utils/location_prefrences.dart';
 import '../home/home_screen.dart';
 import '../login/login_screen.dart';
@@ -81,8 +82,8 @@ class _LocationScreenState extends State<LocationScreen> {
         fit: StackFit.expand,
         children: [
           // 🗺️ Background Image
-          Image.asset(
-            'assets/icons/locationbg.jpg',
+          Image.network(
+            '$baseUrl/icons/locationbg.jpg',
             fit: BoxFit.cover,
           ),
 
@@ -108,8 +109,8 @@ class _LocationScreenState extends State<LocationScreen> {
                     });
                   }
                 },
-                child: Image.asset(
-                  'assets/icons/location.png',
+                child: Image.network(
+                  '$baseUrl/icons/location.png',
                   width: 130,
                   height: 130,
                 ),

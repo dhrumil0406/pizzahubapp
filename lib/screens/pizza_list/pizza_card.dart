@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizzahub/utils/api.dart';
 import '../../models/category_model.dart';
 import '../../models/pizza_model.dart';
 import '../../services/cart_service.dart';
@@ -59,8 +60,8 @@ class PizzaCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    'assets/pizzaimages/${pizza.pizzaimage}',
+                  child: Image.network(
+                    '$baseUrl/pizzaimages/${pizza.pizzaimage}',
                     width: 70,
                     height: 70,
                     fit: BoxFit.cover,
@@ -121,10 +122,10 @@ class PizzaCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     height: 30,
-                    child: Image.asset(
+                    child: Image.network(
                       category.cattype == 1
-                          ? 'assets/icons/veg-mark.jpg'
-                          : 'assets/icons/non-veg-mark.jpg',
+                          ? '$baseUrl/icons/veg-mark.jpg'
+                          : '$baseUrl/icons/non-veg-mark.jpg',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -156,10 +157,10 @@ class PizzaCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
                         height: 45,
-                        child: Image.asset(
+                        child: Image.network(
                           category.cattype == 1
-                              ? 'assets/icons/veg-mark.jpg'
-                              : 'assets/icons/non-veg-mark.jpg',
+                              ? '$baseUrl/icons/veg-mark.jpg'
+                              : '$baseUrl/icons/non-veg-mark.jpg',
                           fit: BoxFit.cover,
                         ),
                       ),

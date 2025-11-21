@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pizzahub/utils/api.dart';
 import 'location_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -83,8 +84,8 @@ class _SplashScreenState extends State<SplashScreen>
           opacity: _fadeAnimation,
           child: ScaleTransition(
             scale: _scaleAnimation,
-            child: Image.asset(
-              'assets/icons/pizzaHubLogo2.png',
+            child: Image.network(
+              '$baseUrl/icons/pizzaHubLogo2.png',
               width: 280,
               height: 280,
             ),

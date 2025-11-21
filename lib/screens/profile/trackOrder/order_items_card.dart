@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizzahub/utils/api.dart';
 import '../../../services/order_service.dart';
 import '../../../models/order_items_model.dart';
 
@@ -118,13 +119,13 @@ class _OrderItemsCardState extends State<OrderItemsCard> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                "assets/pizzaimages/${item.pizzaimage}",
+              child: Image.network(
+                "$baseUrl/pizzaimages/${item.pizzaimage}",
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Image.asset(
-                  "assets/images/default_pizza.png",
+                errorBuilder: (context, error, stackTrace) => Image.network(
+                  "$baseUrl/images/default_pizza.png",
                   width: 80,
                   height: 80,
                 ),
@@ -190,13 +191,13 @@ class _OrderItemsCardState extends State<OrderItemsCard> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    "assets/catimages/${combo.catimage}",
+                  child: Image.network(
+                    "$baseUrl/catimages/${combo.catimage}",
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
-                      "assets/images/default_combo.png",
+                    errorBuilder: (context, error, stackTrace) => Image.network(
+                      "$baseUrl/images/default_combo.png",
                       width: 80,
                       height: 80,
                     ),

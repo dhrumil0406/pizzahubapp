@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizzahub/utils/api.dart';
 import '../../screens/profile/address/address_screen.dart';
 import '../../screens/order/orders_screen.dart';
 import '../../services/address_service.dart';
@@ -671,7 +672,7 @@ class _CartScreenState extends State<CartScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   image: const DecorationImage(
-                    image: AssetImage("assets/images/popup_bg.png"),
+                    image: NetworkImage("$baseUrl/images/popup_bg.png"),
                     fit: BoxFit.fill,
                   ),
                 ),

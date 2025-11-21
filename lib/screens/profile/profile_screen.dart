@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizzahub/utils/api.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/login/login_screen.dart';
 import '../../utils/user_preferences.dart';
@@ -58,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   image: const DecorationImage(
-                    image: AssetImage("assets/images/popup_bg.png"),
+                    image: NetworkImage("$baseUrl/images/popup_bg.png"),
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -248,8 +249,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: const CircleAvatar(
                         radius: 55,
-                        backgroundImage: AssetImage(
-                          'assets/images/profilePic.jpg',
+                        backgroundImage: NetworkImage(
+                          '$baseUrl/images/profilePic.jpg',
                         ),
                         backgroundColor: Colors.white,
                       ),

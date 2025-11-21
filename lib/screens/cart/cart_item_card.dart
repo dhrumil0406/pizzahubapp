@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pizzahub/utils/api.dart';
 import '../../models/pizza_model.dart';
 
 class CartItemCard extends StatelessWidget {
@@ -39,8 +40,8 @@ class CartItemCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  'assets/pizzaimages/${pizza.pizzaimage}',
+                child: Image.network(
+                  '$baseUrl/pizzaimages/${pizza.pizzaimage}',
                   width: 75,
                   height: 75,
                   fit: BoxFit.cover,
