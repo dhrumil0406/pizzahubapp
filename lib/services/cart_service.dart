@@ -75,6 +75,7 @@ class CartService {
   static Future<Map<String, dynamic>> placeOrder({
     required String userId,
     required int paymentId,
+    String? transactionId,
     required String addressId,
     required double totalPrice,
     required double finalAmount,
@@ -86,6 +87,7 @@ class CartService {
       body: {
         'userid': userId,
         'paymentid': paymentId.toString(),
+        'transactionid': transactionId ?? '',
         'addressid': addressId,
         'totalprice': totalPrice.toStringAsFixed(2),
         'finalamount': finalAmount.toStringAsFixed(2),

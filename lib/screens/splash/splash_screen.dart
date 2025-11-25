@@ -84,8 +84,8 @@ class _SplashScreenState extends State<SplashScreen>
           opacity: _fadeAnimation,
           child: ScaleTransition(
             scale: _scaleAnimation,
-            child: Image.network(
-              '$baseUrl/icons/pizzaHubLogo2.png',
+            child: Image.asset(
+              'assets/icons/pizzaHubLogo2.png',
               width: 280,
               height: 280,
             ),

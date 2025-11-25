@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
             key: _formKey,
             child: Column(
               children: [
-                Image.network('$baseUrl/images/pizza_chef.png', width: 200),
+                Image.asset('assets/images/pizza_chef.png', width: 200),
                 const SizedBox(height: 0),
                 Transform.translate(
                   offset: const Offset(0, -50),

@@ -122,10 +122,10 @@ class PizzaCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     height: 30,
-                    child: Image.network(
+                    child: Image.asset(
                       category.cattype == 1
-                          ? '$baseUrl/icons/veg-mark.jpg'
-                          : '$baseUrl/icons/non-veg-mark.jpg',
+                          ? 'assets/icons/veg-mark.jpg'
+                          : 'assets/icons/non-veg-mark.jpg',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -157,10 +157,10 @@ class PizzaCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
                         height: 45,
-                        child: Image.network(
+                        child: Image.asset(
                           category.cattype == 1
-                              ? '$baseUrl/icons/veg-mark.jpg'
-                              : '$baseUrl/icons/non-veg-mark.jpg',
+                              ? 'assets/icons/veg-mark.jpg'
+                              : 'assets/icons/non-veg-mark.jpg',
                           fit: BoxFit.cover,
                         ),
                       ),

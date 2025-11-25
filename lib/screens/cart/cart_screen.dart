@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pizzahub/utils/api.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../../screens/profile/address/address_screen.dart';
 import '../../screens/order/orders_screen.dart';
 import '../../services/address_service.dart';
@@ -7,9 +7,11 @@ import '../../models/category_model.dart';
 import '../../screens/home/home_screen.dart';
 import '../../models/pizza_model.dart';
 import '../../services/cart_service.dart';
-import 'cart_item_card.dart';
-import 'combo_cart_item_card.dart';
+import '../../utils/api.dart';
 import '../../utils/user_preferences.dart';
+import '../../services/user_service.dart';
+import 'combo_cart_item_card.dart';
+import 'cart_item_card.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -34,10 +36,29 @@ class _CartScreenState extends State<CartScreen> {
 
   final List<String> _paymentMethods = ['Cash', 'Card', 'UPI'];
 
+  late Razorpay _razorpay;
+  String? userPhone;
+  String? userEmail;
+
   @override
   void initState() {
     super.initState();
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _paymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _paymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _externalWallet);
+
     _initializeCart();
+    _loadUserData(); // fetch email + phone for payment
+  }
+
+  @override
+  void dispose() {
+    // --------------------------------------------------------
+    // 🔥 Razorpay Dispose Added
+    // --------------------------------------------------------
+    _razorpay.clear();
+    super.dispose();
   }
 
   Future<void> _initializeCart() async {
@@ -47,6 +68,66 @@ class _CartScreenState extends State<CartScreen> {
       await loadCartItems();
       await loadAddresses(); // fetch user addresses
     }
+  }
+
+  Future<void> _loadUserData() async {
+    if (userId == null) return;
+
+    final user = await UserService.fetchUser(int.parse(userId!));
+    if (user != null) {
+      setState(() {
+        userPhone = user.phoneno;
+        userEmail = user.email;
+      });
+    }
+  }
+
+  void _openRazorpay() {
+    var options = {
+      "key": "rzp_test_Rh9nWGN0zxMf21", // your key
+      "amount": (finalTotal * 100).toInt(),
+      "currency": "INR",
+      "name": "PizzaHub",
+      "description": "Order Payment",
+      "image": "https://razorpay.com/favicon.png",
+      "prefill": {"contact": userPhone ?? "", "email": userEmail ?? ""},
+      "theme": {"color": "#FF5722"},
+      "method": {"card": true, "upi": true, "wallet": true, "netbanking": true},
+      "upi": {
+        "mandatory": false,
+        "mode": "intent",
+        "apps": ["google_pay", "phonepe", "paytm"],
+      },
+      "retry": {"enabled": true, "max_count": 1},
+      "upi": {
+        "mandatory": false,
+        "mode": "intent",
+        "apps": ["google_pay", "phonepe", "paytm"],
+      },
+      "retry": {"enabled": true, "max_count": 1},
+    };
+
+    _razorpay.open(options);
+  }
+
+  void _paymentSuccess(PaymentSuccessResponse response) async {
+    int paymentMode = _selectedPaymentMethod == "Cash"
+        ? 1
+        : _selectedPaymentMethod == "Card"
+        ? 2
+        : 3;
+    print("✔ Payment Success: ${response.paymentId}");
+    await _processOrder(paymentMode, response.paymentId.toString());
+  }
+
+  void _paymentError(PaymentFailureResponse response) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Payment Failed")));
+  }
+
+  void _externalWallet(ExternalWalletResponse response) {
+    print("External Wallet: ${response.walletName}");
   }
 
   bool isTablet(BuildContext context) {
@@ -228,9 +309,10 @@ class _CartScreenState extends State<CartScreen> {
                     subtitle: addr["addressType"] != null
                         ? Text(addr["addressType"])
                         : null,
-                    onTap: () => Navigator.of(
-                      context,
-                    ).pop({'id': addr['addressid'], 'address': formattedAddress}),
+                    onTap: () => Navigator.of(context).pop({
+                      'id': addr['addressid'],
+                      'address': formattedAddress,
+                    }),
                   );
                 }),
               ListTile(
@@ -295,58 +377,45 @@ class _CartScreenState extends State<CartScreen> {
       ).showSnackBar(const SnackBar(content: Text("Cart is empty")));
       return;
     }
-    if (_selectedAddressId == null || _selectedAddressText == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select delivery address")),
-      );
-      return;
-    }
-    if (_selectedPaymentMethod == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select payment method")),
-      );
+    if (_selectedAddressId == null || _selectedPaymentMethod == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Select address & Payment")));
       return;
     }
 
-    setState(() {
-      _isPlacingOrder = true;
-    });
+    setState(() => _isPlacingOrder = true);
 
+    int paymentMode = _selectedPaymentMethod == "Cash"
+        ? 1
+        : _selectedPaymentMethod == "Card"
+        ? 2
+        : 3;
+
+    if (paymentMode == 1) {
+      // cash on delivery - direct order
+      await _processOrder(paymentMode, "");
+    } else {
+      // online payment → open razorpay
+      _openRazorpay();
+    }
+
+    setState(() => _isPlacingOrder = false);
+  }
+
+  Future<void> _processOrder(int paymentId, String txnId) async {
     try {
-      // TODO: Replace the simulated delay with your real order API call.
-      // Example: await CartService.placeOrder(userId, payload)
-      await Future.delayed(const Duration(seconds: 2));
-
-      int paymentId;
-      switch (_selectedPaymentMethod) {
-        case 'Cash':
-          paymentId = 1;
-          break;
-        case 'Card':
-          paymentId = 2;
-          break;
-        case 'UPI':
-          paymentId = 3;
-          break;
-        default:
-          paymentId = 1;
-      }
-
       final response = await CartService.placeOrder(
         userId: userId!,
         paymentId: paymentId,
+        transactionId: txnId,
         addressId: _selectedAddressId!,
         totalPrice: subtotal,
         finalAmount: finalTotal,
       );
 
       if (response['status'] == 'success') {
-        // Clear cart locally
         setState(() => cartItems.clear());
-
-        // ✅ If you want to show PDF link
-        final pdfUrl = response['data']['pdf_url'];
-        print("Invoice PDF: $pdfUrl");
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Order placed successfully!")),
@@ -354,25 +423,12 @@ class _CartScreenState extends State<CartScreen> {
 
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const OrdersScreen()),
-              (route) => false,
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response['message'] ?? "Failed to place order")),
+          MaterialPageRoute(builder: (_) => const OrdersScreen()),
+          (_) => false,
         );
       }
     } catch (e) {
-      print('Place order error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Failed to place order")));
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isPlacingOrder = false;
-        });
-      }
+      print("Order Error: $e");
     }
   }
 
@@ -559,13 +615,13 @@ class _CartScreenState extends State<CartScreen> {
         bottomNavigationBar: SafeArea(
           minimum: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: SizedBox(
-            height: tablet ? 72 : 56,
+            height: tablet ? 72 : 52,
             child: ElevatedButton(
               onPressed:
-              (cartItems.isNotEmpty &&
-                  _selectedAddressId != null &&
-                  _selectedPaymentMethod != null &&
-                  !_isPlacingOrder)
+                  (cartItems.isNotEmpty &&
+                      _selectedAddressId != null &&
+                      _selectedPaymentMethod != null &&
+                      !_isPlacingOrder)
                   ? () => _showPlaceOrderDialog(context)
                   : null,
               style: ElevatedButton.styleFrom(
@@ -646,7 +702,7 @@ class _CartScreenState extends State<CartScreen> {
           leading: Icons.payment,
           title: 'Payment Method',
           subtitle:
-              _selectedPaymentMethod ?? 'Choose payment method (Cash/Card/UPI)',
+              _selectedPaymentMethod ?? 'Choose payment method',
           onTap: () => _showPaymentSelector(tablet),
           tablet: tablet,
         ),
@@ -672,7 +728,7 @@ class _CartScreenState extends State<CartScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   image: const DecorationImage(
-                    image: NetworkImage("$baseUrl/images/popup_bg.png"),
+                    image: AssetImage("assets/images/popup_bg.png"),
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -713,8 +769,7 @@ class _CartScreenState extends State<CartScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25),
                               ),
-                              padding:
-                              const EdgeInsets.symmetric(vertical: 12),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Text(
                               "Cancel",
@@ -737,8 +792,7 @@ class _CartScreenState extends State<CartScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25),
                               ),
-                              padding:
-                              const EdgeInsets.symmetric(vertical: 12),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Text(
                               "Place Order",

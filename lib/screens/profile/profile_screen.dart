@@ -59,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   image: const DecorationImage(
-                    image: NetworkImage("$baseUrl/images/popup_bg.png"),
+                    image: AssetImage("assets/images/popup_bg.png"),
                     fit: BoxFit.fill,
                   ),
                 ),
@@ -249,8 +249,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: const CircleAvatar(
                         radius: 55,
-                        backgroundImage: NetworkImage(
-                          '$baseUrl/images/profilePic.jpg',
+                        backgroundImage: AssetImage(
+                          'assets/images/profilePic.jpg',
                         ),
                         backgroundColor: Colors.white,
                       ),

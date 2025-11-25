@@ -177,8 +177,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 60,
-                        backgroundImage: const NetworkImage(
-                          "$baseUrl/images/profilePic.jpg",
+                        backgroundImage: const AssetImage(
+                          "assets/images/profilePic.jpg",
                         ),
                         backgroundColor: Colors.grey.shade200,
                       ),

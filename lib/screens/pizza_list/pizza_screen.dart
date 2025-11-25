@@ -134,10 +134,10 @@ class PizzaScreen extends StatelessWidget {
                               height: 30,
                               width: 30,
                               padding: const EdgeInsets.all(2),
-                              child: Image.network(
+                              child: Image.asset(
                                 category.cattype == 1
-                                    ? '$baseUrl/icons/veg-mark.jpg'
-                                    : '$baseUrl/icons/non-veg-mark.jpg',
+                                    ? 'assets/icons/veg-mark.jpg'
+                                    : 'assets/icons/non-veg-mark.jpg',
                                 fit: BoxFit.cover,
                               ),
                             ),

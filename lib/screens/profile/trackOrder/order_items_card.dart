@@ -124,8 +124,8 @@ class _OrderItemsCardState extends State<OrderItemsCard> {
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Image.network(
-                  "$baseUrl/images/default_pizza.png",
+                errorBuilder: (context, error, stackTrace) => Image.asset(
+                  "assets/images/default_pizza.png",
                   width: 80,
                   height: 80,
                 ),
@@ -196,8 +196,8 @@ class _OrderItemsCardState extends State<OrderItemsCard> {
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Image.network(
-                      "$baseUrl/images/default_combo.png",
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      "assets/images/default_combo.png",
                       width: 80,
                       height: 80,
                     ),

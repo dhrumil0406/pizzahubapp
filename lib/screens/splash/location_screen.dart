@@ -82,8 +82,8 @@ class _LocationScreenState extends State<LocationScreen> {
         fit: StackFit.expand,
         children: [
           // 🗺️ Background Image
-          Image.network(
-            '$baseUrl/icons/locationbg.jpg',
+          Image.asset(
+            'assets/icons/locationbg.jpg',
             fit: BoxFit.cover,
           ),
 
@@ -109,8 +109,8 @@ class _LocationScreenState extends State<LocationScreen> {
                     });
                   }
                 },
-                child: Image.network(
-                  '$baseUrl/icons/location.png',
+                child: Image.asset(
+                  'assets/icons/location.png',
                   width: 130,
                   height: 130,
                 ),
